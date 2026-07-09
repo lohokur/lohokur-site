@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — LOHO KUR</title>
+<meta name="description" content="Pricing for the LOHO KUR app — one canvas from first sketch to full production. Plans that scale with your studio.">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --ink:#07080a; --panel:#0e0f12; --fg:#eef1ee; --muted:#9aa39c; --dim:#6d746e;
+    --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.18);
+    --glass:rgba(255,255,255,.045); --mint:#a9f0d0; --mint-d:#4a6f5d;
+    --sans:'Helvetica Neue',Helvetica,Arial,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,'Roboto Mono',monospace;
+  }
+  html,body{ background:var(--ink); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  body{ overflow-x:hidden; }
+  a{ color:inherit; text-decoration:none; }
+  .mono{ font-family:var(--mono); }
+  .wrap{ max-width:1140px; margin:0 auto; padding:0 24px; }
+  .glow{ position:fixed; top:-320px; left:50%; transform:translateX(-50%); width:900px; height:640px;
+    background:radial-gradient(ellipse at center, rgba(169,240,208,.14), transparent 62%); pointer-events:none; z-index:0; }
+
+  /* master header — carried over from the homepage (lohokur.com) verbatim */
+  .chrome{position:absolute;z-index:200}
+  .brand{top:22px;left:34px;height:40px;display:flex;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.24em;color:var(--fg);text-transform:uppercase;
+    text-shadow:0 1px 10px rgba(0,0,0,.6)}
+  .brand b{font-weight:700}
+  .brand sup{font-size:.55em;top:0;color:var(--fg);opacity:.7}
+  .brand a{display:inline-flex;align-items:flex-start;gap:3px}
+  .brand .lk-logo{height:19px;width:auto;display:block;filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55))}
+  nav.pill{top:22px;right:30px}
+  nav.pill ul{list-style:none;display:flex;align-items:stretch;
+    background:rgba(20,24,22,.28);border:1px solid var(--line);border-radius:11px;overflow:hidden;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  nav.pill li+li{border-left:1px solid var(--line)}
+  nav.pill a{display:block;padding:11px 20px;font-size:13px;letter-spacing:.01em;color:var(--fg);opacity:.9;
+    transition:background .35s ease,opacity .35s ease}
+  nav.pill a:hover{background:rgba(255,255,255,.10);opacity:1}
+  nav.pill li.login a{background:var(--fg);color:var(--ink);opacity:1;font-weight:600}
+  nav.pill li.login a:hover{background:#a9f0d0;color:var(--ink)}
+  .menu-toggle{display:none;position:relative;z-index:2;width:42px;height:38px;padding:0;cursor:pointer;
+    flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    border:1px solid var(--line);border-radius:11px;background:rgba(20,24,22,.35);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .menu-toggle span{display:block;width:16px;height:1.5px;background:var(--fg);border-radius:2px;
+    transition:transform .3s ease,opacity .2s ease}
+  nav.pill.open .menu-toggle span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+  nav.pill.open .menu-toggle span:nth-child(2){opacity:0}
+  nav.pill.open .menu-toggle span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+  .mobile-login{display:none;height:38px;padding:0 16px;cursor:pointer;
+    font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.02em;
+    color:var(--ink);background:var(--fg);border:1px solid var(--fg);border-radius:11px;
+    box-shadow:0 6px 20px -8px rgba(0,0,0,.6)}
+  @media (max-width:720px){
+    .brand{left:20px;top:18px}
+    nav.pill{top:18px;right:16px;display:flex;align-items:center;gap:10px}
+    .menu-toggle{display:flex}
+    .mobile-login{display:inline-flex;align-items:center}
+    nav.pill ul{position:absolute;top:46px;right:0;flex-direction:column;align-items:stretch;min-width:172px;
+      border-radius:12px;transform-origin:top right;opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;
+      transition:opacity .24s ease,transform .24s ease}
+    nav.pill.open ul{opacity:1;transform:none;pointer-events:auto}
+    nav.pill li+li{border-left:none;border-top:1px solid var(--line)}
+    nav.pill a{padding:13px 18px;font-size:13px;text-align:right}
+    nav.pill li.login{display:none}
+  }
+
+  /* hero */
+  header.hero{ position:relative; z-index:1; text-align:center; padding:56px 24px 30px; }
+  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--mint); }
+  h1{ font-size:clamp(34px,5.4vw,56px); font-weight:500; letter-spacing:-.025em; line-height:1.02; margin:16px 0 14px; }
+  .hero-sub{ color:var(--muted); font-size:16px; line-height:1.6; max-width:560px; margin:0 auto; }
+
+  /* billing toggle */
+  .toggle{ display:inline-flex; align-items:center; gap:5px; margin:28px auto 0; padding:4px; border:1px solid var(--line); border-radius:11px; background:var(--glass); }
+  .toggle button{ font-family:var(--sans); font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; padding:8px 16px; border-radius:8px; transition:.2s; }
+  .toggle button.on{ background:var(--fg); color:var(--ink); font-weight:600; }
+  .save{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; color:var(--mint); margin-left:2px; }
+
+  /* plan cards */
+  .plans{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:40px; }
+  .plan{ border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:24px 20px 26px; display:flex; flex-direction:column; position:relative; }
+  .plan.pop{ border-color:var(--mint); box-shadow:0 0 0 1px var(--mint), 0 30px 80px -40px rgba(169,240,208,.4); }
+  .pop-badge{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--mint); color:var(--ink);
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:500; padding:4px 11px; border-radius:20px; white-space:nowrap; }
+  .plan-name{ font-size:17px; font-weight:600; }
+  .plan-for{ color:var(--dim); font-size:12px; margin-top:3px; min-height:32px; }
+  .price{ margin:16px 0 2px; display:flex; align-items:baseline; gap:4px; }
+  .price .amt{ font-size:38px; font-weight:500; letter-spacing:-.02em; }
+  .price .per{ font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .billed{ font-family:var(--mono); font-size:10.5px; color:var(--dim); min-height:15px; }
+  .cta{ display:block; text-align:center; margin:20px 0 22px; padding:11px; border-radius:11px; font-size:13.5px; font-weight:600; transition:.2s; cursor:pointer; }
+  .cta.ghost{ border:1px solid var(--line2); color:var(--fg); background:none; }
+  .cta.ghost:hover{ border-color:var(--mint); }
+  .cta.solid{ background:var(--mint); color:var(--ink); border:none; }
+  .cta.solid:hover{ background:#c4f5da; }
+  .plan .incl{ font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); margin-bottom:12px; }
+  .plan ul{ list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .plan li{ font-size:12.5px; line-height:1.4; color:var(--fg); display:flex; gap:9px; align-items:flex-start; }
+  .plan li .ic{ color:var(--mint); flex:none; font-size:12px; line-height:1.4; }
+  .plan li.off{ color:var(--dim); }
+  .plan li.off .ic{ color:var(--dim); }
+
+  /* pooled + take-rate callouts */
+  .band{ position:relative; z-index:1; margin-top:34px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .cbox{ border:1px solid var(--line); border-radius:16px; background:var(--glass); padding:22px 24px; }
+  .cbox h3{ font-size:15px; font-weight:600; margin-bottom:7px; }
+  .cbox h3 .k{ font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--mint); display:block; margin-bottom:8px; }
+  .cbox p{ color:var(--muted); font-size:13px; line-height:1.6; }
+  .cbox p b{ color:var(--fg); font-weight:600; }
+  .cbox p .m{ color:var(--mint); }
+
+  /* comparison matrix */
+  .compare{ position:relative; z-index:1; margin-top:64px; }
+  .compare h2{ text-align:center; font-size:28px; font-weight:500; letter-spacing:-.02em; margin-bottom:6px; }
+  .compare .csub{ text-align:center; color:var(--muted); font-size:13.5px; margin-bottom:30px; }
+  table{ width:100%; border-collapse:collapse; }
+  thead th{ position:sticky; top:0; }
+  th,td{ padding:13px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:12.5px; }
+  thead th{ font-size:13px; font-weight:600; vertical-align:bottom; }
+  thead th.p{ text-align:center; }
+  thead th.p small{ display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.06em; color:var(--muted); font-weight:400; margin-top:3px; }
+  thead th.p.pop{ color:var(--mint); }
+  td.feat{ color:var(--fg); width:34%; }
+  td.val{ text-align:center; color:var(--muted); }
+  td.val.yes{ color:var(--mint); }
+  tr.cat td{ font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); border-bottom:1px solid var(--line2); padding-top:22px; }
+
+  /* faq */
+  .faq{ position:relative; z-index:1; margin-top:64px; display:grid; grid-template-columns:1fr 1fr; gap:16px 40px; }
+  .faq h2{ grid-column:1/-1; text-align:center; font-size:26px; font-weight:500; letter-spacing:-.02em; margin-bottom:8px; }
+  .qa h4{ font-size:14px; font-weight:600; margin-bottom:6px; }
+  .qa p{ color:var(--muted); font-size:13px; line-height:1.6; }
+
+  footer{ position:relative; z-index:1; margin-top:72px; border-top:1px solid var(--line); padding:26px 0 60px; display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:11px; color:var(--dim); letter-spacing:.06em; }
+  footer a:hover{ color:var(--fg); }
+
+  @media(max-width:900px){
+    .plans{ grid-template-columns:1fr 1fr; }
+    .band{ grid-template-columns:1fr; }
+    .faq{ grid-template-columns:1fr; }
+    .compare{ overflow-x:auto; }
+    table{ min-width:680px; }
+    .nav-links a:not(.nav-cta){ display:none; }
+  }
+  @media(max-width:560px){ .plans{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<div class="chrome brand"><a href="https://lohokur.com"><img class="lk-logo" alt="LOHO KUR" src="/lk-logo.png"><sup>&reg;</sup></a></div>
+<nav class="chrome pill" aria-label="Primary">
+  <button class="mobile-login" id="loginBtnM" type="button">Go to app</button>
+  <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navList"><span></span><span></span><span></span></button>
+  <ul id="navList">
+    <li><a href="https://lohokur.com">Identities</a></li>
+    <li><a href="https://lohokur.com">Shop</a></li>
+    <li><a href="https://lohokur.com">Studio</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="mailto:loho@lohokur.com">Contact</a></li>
+    <li class="login"><a href="https://lohokur-app.vercel.app" id="loginBtn">Go to app</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Pricing</div>
+  <h1>From first sketch<br>to full production.</h1>
+  <p class="hero-sub">One canvas takes a fashion idea through visualise, pattern, techpack and manufacture. Plans scale with your studio — pay for a shared credit pool that grows with your seats.</p>
+
+  <div class="toggle" id="toggle">
+    <button data-cycle="monthly" class="on">Monthly</button>
+    <button data-cycle="annual">Annual <span class="save">−20%</span></button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- PLAN CARDS -->
+  <section class="plans">
+
+    <!-- Free -->
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-for">Explore the canvas.</div>
+      <div class="price"><span class="amt" data-m="£0" data-a="£0">£0</span><span class="per">/forever</span></div>
+      <div class="billed"></div>
+      <a class="cta ghost" href="https://lohokur-app.vercel.app">Start free</a>
+      <div class="incl">Includes</div>
+      <ul>
+        <li><span class="ic">✓</span> Full node canvas</li>
+        <li><span class="ic">✓</span> 3 active projects</li>
+        <li><span class="ic">✓</span> 20 AI generations / mo</li>
+        <li class="off"><span class="ic">✕</span> Watermarked visuals</li>
+        <li class="off"><span class="ic">✕</span> No techpack export</li>
+      </ul>
+    </div>
+
+    <!-- Studio -->
+    <div class="plan">
+      <div class="plan-name">Studio</div>
+      <div class="plan-for">For solo designers.</div>
+      <div class="price"><span class="amt" data-m="£29" data-a="£23">£29</span><span class="per">/seat / mo</span></div>
+      <div class="billed" data-a-note="Billed £276/yr per seat"></div>
+      <a class="cta ghost" href="https://lohokur-app.vercel.app">Get Studio</a>
+      <div class="incl">Everything in Free, plus</div>
+      <ul>
+        <li><span class="ic">✓</span> Unlimited projects</li>
+        <li><span class="ic">✓</span> 1,000 credits / mo</li>
+        <li><span class="ic">✓</span> Techpack PDF export</li>
+        <li><span class="ic">✓</span> Pattern engine + all AI nodes</li>
+        <li><span class="ic">✓</span> Watermark-free</li>
+      </ul>
+    </div>
+
+    <!-- Pro (popular) -->
+    <div class="plan pop">
+      <div class="pop-badge">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-for">For studios &amp; teams.</div>
+      <div class="price"><span class="amt" data-m="£59" data-a="£47">£59</span><span class="per">/seat / mo</span></div>
+      <div class="billed" data-a-note="Billed £564/yr per seat"></div>
+      <a class="cta solid" href="https://lohokur-app.vercel.app">Get Pro</a>
+      <div class="incl">Everything in Studio, plus</div>
+      <ul>
+        <li><span class="ic">✓</span> 3,000 credits / mo, pooled</li>
+        <li><span class="ic">✓</span> Up to 8 seats</li>
+        <li><span class="ic">✓</span> Shared assets &amp; workspace</li>
+        <li><span class="ic">✓</span> Priority generation</li>
+        <li><span class="ic">✓</span> Usage analytics</li>
+      </ul>
+    </div>
+
+    <!-- Brand -->
+    <div class="plan">
+      <div class="plan-name">Brand</div>
+      <div class="plan-for">Idea to manufactured.</div>
+      <div class="price"><span class="amt" data-m="£199" data-a="£159">£199</span><span class="per">/seat / mo</span></div>
+      <div class="billed" data-a-note="Billed £1,908/yr per seat"></div>
+      <a class="cta ghost" href="mailto:loho@lohokur.com?subject=LOHO%20KUR%20Brand%20pilot">Book a pilot</a>
+      <div class="incl">Everything in Pro, plus</div>
+      <ul>
+        <li><span class="ic">✓</span> 10,000 credits / mo, pooled</li>
+        <li><span class="ic">✓</span> Production-ready techpacks</li>
+        <li><span class="ic">✓</span> Manufacturing rails</li>
+        <li><span class="ic">✓</span> Supplier + size-mix data</li>
+        <li><span class="ic">✓</span> Dedicated onboarding</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- POOLED + TAKE-RATE -->
+  <section class="band">
+    <div class="cbox">
+      <h3><span class="k">Pooled usage</span>One shared credit pool.</h3>
+      <p>Credits aren't locked per person. Every seat draws from <b>one pool that scales with your team</b>, so a busy week for one designer doesn't stall the rest. AI generations — visualise, pattern, techpack — all draw from the same balance. Top up any time.</p>
+    </div>
+    <div class="cbox">
+      <h3><span class="k">Production</span>We only win when you ship.</h3>
+      <p>On the <b>Brand</b> plan, push a validated design straight to sampling or manufacture through our rails. Beyond the seat fee, production runs carry a <span class="m">10–15% take-rate</span> — aligned to your success, on relationships competitors don't have.</p>
+    </div>
+  </section>
+
+  <!-- COMPARISON MATRIX -->
+  <section class="compare">
+    <h2>Compare every plan</h2>
+    <p class="csub">Everything each tier unlocks, side by side.</p>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th class="p">Free<small>£0</small></th>
+          <th class="p">Studio<small>£29/seat</small></th>
+          <th class="p pop">Pro<small>£59/seat</small></th>
+          <th class="p">Brand<small>£199/seat</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="cat"><td colspan="5">Canvas &amp; AI</td></tr>
+        <tr><td class="feat">Node design canvas</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Active projects</td><td class="val">3</td><td class="val">Unlimited</td><td class="val">Unlimited</td><td class="val">Unlimited</td></tr>
+        <tr><td class="feat">AI credits / month</td><td class="val">20 gens</td><td class="val">1,000</td><td class="val">3,000 pooled</td><td class="val">10,000 pooled</td></tr>
+        <tr><td class="feat">All AI models (visualise, pattern)</td><td class="val">Limited</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Priority generation</td><td class="val">—</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+
+        <tr class="cat"><td colspan="5">Design output</td></tr>
+        <tr><td class="feat">Watermark-free visuals</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Techpack PDF export</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">Production-ready</td></tr>
+        <tr><td class="feat">Parametric pattern engine</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+
+        <tr class="cat"><td colspan="5">Collaboration</td></tr>
+        <tr><td class="feat">Seats</td><td class="val">1</td><td class="val">1</td><td class="val">Up to 8</td><td class="val">Custom</td></tr>
+        <tr><td class="feat">Shared assets &amp; workspace</td><td class="val">—</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Usage analytics</td><td class="val">—</td><td class="val">—</td><td class="val yes">✓</td><td class="val yes">✓</td></tr>
+
+        <tr class="cat"><td colspan="5">Production</td></tr>
+        <tr><td class="feat">Manufacturing rails (idea → made)</td><td class="val">—</td><td class="val">—</td><td class="val">—</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Supplier integration &amp; size-mix data</td><td class="val">—</td><td class="val">—</td><td class="val">—</td><td class="val yes">✓</td></tr>
+        <tr><td class="feat">Production take-rate</td><td class="val">—</td><td class="val">—</td><td class="val">—</td><td class="val">10–15%</td></tr>
+
+        <tr class="cat"><td colspan="5">Support</td></tr>
+        <tr><td class="feat">Support</td><td class="val">Community</td><td class="val">Email</td><td class="val">Priority</td><td class="val">Dedicated + onboarding</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <h2>Questions</h2>
+    <div class="qa"><h4>What's a credit?</h4><p>One AI generation — a visualise, a pattern draft, a techpack render. Plans include a monthly pool; you can top up any time without changing tier.</p></div>
+    <div class="qa"><h4>Why per seat?</h4><p>Studios work in teams. Seats share one credit pool, so you pay for people and pull compute from a common balance rather than rigid per-person caps.</p></div>
+    <div class="qa"><h4>How does production pricing work?</h4><p>On Brand, you send a design to sampling or manufacture through our partners. You pay the run cost plus a 10–15% take-rate — nothing until you actually produce.</p></div>
+    <div class="qa"><h4>Can I start free?</h4><p>Yes. The Free plan gives you the full canvas and 20 generations a month — no card. Upgrade when you need exports or more compute.</p></div>
+  </section>
+
+  <footer>
+    <a href="https://lohokur.com">lohokur.com &nbsp;·&nbsp; 2026</a>
+    <a href="mailto:loho@lohokur.com">loho@lohokur.com</a>
+  </footer>
+
+</div>
+
+<script>
+  const t = document.getElementById('toggle');
+  const btns = t.querySelectorAll('button');
+  function setCycle(cycle){
+    btns.forEach(b => b.classList.toggle('on', b.dataset.cycle === cycle));
+    document.querySelectorAll('.price .amt').forEach(el => {
+      el.textContent = cycle === 'annual' ? el.dataset.a : el.dataset.m;
+    });
+    document.querySelectorAll('.billed').forEach(el => {
+      el.textContent = (cycle === 'annual' && el.dataset.aNote) ? el.dataset.aNote : '';
+    });
+  }
+  btns.forEach(b => b.addEventListener('click', () => setCycle(b.dataset.cycle)));
+</script>
+
+<script>
+/* master header — hamburger toggle (from homepage) */
+(function(){
+  var APP_URL='https://lohokur-app.vercel.app';
+  var navp=document.querySelector('nav.pill'), mt=document.getElementById('menuToggle');
+  if(!navp) return;
+  function setMenu(o){ navp.classList.toggle('open',o); if(mt) mt.setAttribute('aria-expanded',o?'true':'false'); }
+  var lbm=document.getElementById('loginBtnM');
+  if(lbm) lbm.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); setMenu(false); location.href=APP_URL; });
+  if(mt){
+    mt.addEventListener('click',function(e){ e.stopPropagation(); setMenu(!navp.classList.contains('open')); });
+    navp.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',function(){ setMenu(false); }); });
+    document.addEventListener('click',function(e){ if(navp.classList.contains('open') && !navp.contains(e.target)) setMenu(false); });
+  }
+})();
+</script>
+</body>
+</html>
