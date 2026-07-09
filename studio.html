@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio — LOHO KUR</title>
-<meta name="description" content="LOHO KUR Studio — work with us. Send a brief.">
+<meta name="description" content="Agency is a technology solution where worldbuilding, AI and branding come together. Work with us.">
 <meta name="theme-color" content="#07080a">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -16,47 +16,36 @@
   html,body{ height:100%; background:var(--ink); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
   a{ color:inherit; text-decoration:none; }
 
-  /* faint stem-player glow behind the centre */
-  .glow{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:760px; height:760px; border-radius:50%;
-    background:radial-gradient(circle at center, rgba(169,240,208,.10), transparent 62%); pointer-events:none; z-index:0;
+  /* faint glow, drifted toward the content on the right */
+  .glow{ position:fixed; top:50%; right:2%; transform:translateY(-50%); width:720px; height:720px; border-radius:50%;
+    background:radial-gradient(circle at center, rgba(169,240,208,.09), transparent 62%); pointer-events:none; z-index:0;
     animation:breathe 7s ease-in-out infinite; }
-  @keyframes breathe{ 0%,100%{ opacity:.7; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:1; transform:translate(-50%,-50%) scale(1.06); } }
+  @keyframes breathe{ 0%,100%{ opacity:.7; transform:translateY(-50%) scale(1); } 50%{ opacity:1; transform:translateY(-50%) scale(1.05); } }
 
   /* minimal chrome — just the mark, top-left, home */
   .brand{ position:fixed; top:24px; left:28px; z-index:20; display:inline-flex; align-items:flex-start; gap:3px; }
   .brand .lk-logo{ height:18px; width:auto; display:block; filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55)); opacity:.9; }
   .brand sup{ font-family:var(--mono); font-size:9px; color:var(--fg); opacity:.6; }
-  .back{ position:fixed; top:26px; right:28px; z-index:20; font-family:var(--mono); font-size:11px; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--dim); transition:color .3s ease; }
-  .back:hover{ color:var(--fg); }
 
-  main{ position:relative; z-index:1; min-height:100%; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; text-align:center; padding:120px 24px; gap:0; animation:in .8s ease both; }
+  main{ position:relative; z-index:1; min-height:100%; display:flex; align-items:center; justify-content:flex-end;
+    padding:120px 7vw 120px 24px; animation:in .8s ease both; }
   @keyframes in{ from{ opacity:0; } to{ opacity:1; } }
 
-  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--mint); }
-  h1{ font-size:clamp(44px,8vw,92px); font-weight:500; letter-spacing:-.035em; line-height:.98; margin:22px 0 30px; }
+  .panel{ max-width:520px; text-align:right; display:flex; flex-direction:column; align-items:flex-end; }
+  .line{ font-size:clamp(23px,3.1vw,37px); font-weight:500; letter-spacing:-.02em; line-height:1.28; color:var(--fg); }
+  .line .m{ color:var(--mint); }
 
-  .email{ display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:14px;
-    background:var(--fg); color:var(--ink); font-size:15px; font-weight:600; letter-spacing:.01em;
-    transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
-    box-shadow:0 20px 60px -26px rgba(169,240,208,.5); }
-  .email:hover{ background:var(--mint); transform:translateY(-2px); }
-  .email .arrow{ font-family:var(--mono); }
-  .brief{ margin-top:16px; font-size:13px; color:var(--muted); }
-  .brief a{ color:var(--muted); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--line2); }
-  .brief a:hover{ color:var(--fg); }
+  .cta{ margin-top:38px; display:inline-flex; align-items:center; gap:10px; font-size:17px; font-weight:600;
+    color:var(--fg); transition:color .25s ease, gap .25s ease; }
+  .cta .arrow{ font-family:var(--mono); transition:transform .25s ease; }
+  .cta:hover{ color:var(--mint); gap:14px; }
+  .cta:hover .arrow{ transform:translateX(3px); }
 
-  /* previous client — quiet, at the foot of the moment */
-  .prev{ position:fixed; left:0; right:0; bottom:34px; z-index:1; text-align:center;
-    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
-  .prev .lbl{ color:var(--dim); }
-  .prev .client{ color:var(--muted); transition:color .3s ease; }
-  a.prev-link:hover .client{ color:var(--fg); }
-
-  @media (max-width:560px){
-    main{ padding:100px 22px; }
-    .prev{ bottom:26px; }
+  @media (max-width:640px){
+    main{ justify-content:flex-start; padding:110px 24px; }
+    .panel{ text-align:left; align-items:flex-start; }
+    .line{ font-size:clamp(24px,7vw,34px); }
+    .glow{ right:-30%; }
   }
 </style>
 </head>
@@ -64,17 +53,12 @@
 <div class="glow"></div>
 
 <a class="brand" href="/"><img class="lk-logo" alt="LOHO KUR" src="/lk-logo.png"><sup>&reg;</sup></a>
-<a class="back" href="/">← lohokur.com</a>
 
 <main>
-  <div class="eyebrow">LOHO KUR Studio</div>
-  <h1>Work with us.</h1>
-  <a class="email" href="mailto:loho@lohokur.com?subject=A%20brief%20for%20LOHO%20KUR%20Studio&body=The%20world%20you're%20building%3A%0A%0AWhat%20you%20need%20from%20us%3A%0A%0ATimeline%3A%0A%0A">Email a brief <span class="arrow">→</span></a>
-  <div class="brief">or reach us at <a href="mailto:loho@lohokur.com">loho@lohokur.com</a></div>
+  <div class="panel">
+    <p class="line">Agency is a technology solution where <span class="m">worldbuilding, AI and branding</span> come together.</p>
+    <a class="cta" href="mailto:loho@lohokur.com?subject=A%20brief%20for%20LOHO%20KUR&body=The%20world%20you're%20building%3A%0A%0AWhat%20you%20need%20from%20us%3A%0A%0ATimeline%3A%0A%0A">Work with us <span class="arrow">→</span></a>
+  </div>
 </main>
-
-<a class="prev prev-link" href="https://stemplayer.com" target="_blank" rel="noopener">
-  <span class="lbl">Previously</span> &nbsp;·&nbsp; <span class="client">Stem Player</span>
-</a>
 </body>
 </html>
