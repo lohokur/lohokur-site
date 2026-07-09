@@ -34,8 +34,7 @@
     justify-content:center; text-align:center; padding:120px 24px; gap:0; animation:in 1s ease both; }
   @keyframes in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
 
-  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--mint); }
-  h1{ font-size:clamp(44px,8vw,92px); font-weight:500; letter-spacing:-.035em; line-height:.98; margin:22px 0 30px; }
+  h1{ font-size:clamp(44px,8vw,92px); font-weight:500; letter-spacing:-.035em; line-height:.98; margin:0 0 30px; }
 
   .email{ display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:14px;
     background:var(--fg); color:var(--ink); font-size:15px; font-weight:600; letter-spacing:.01em;
@@ -47,16 +46,17 @@
   .brief a{ color:var(--muted); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--line2); }
   .brief a:hover{ color:var(--fg); }
 
-  /* previous client — quiet, at the foot of the moment */
-  .prev{ position:fixed; left:0; right:0; bottom:34px; z-index:1; text-align:center;
-    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
-  .prev .lbl{ color:var(--dim); }
-  .prev .client{ color:var(--muted); transition:color .3s ease; }
-  a.prev-link:hover .client{ color:var(--fg); }
+  /* previous clients — the emphasis of the page */
+  .clients{ margin-top:76px; display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .clients .lbl{ font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--dim); }
+  .clients .roster{ display:flex; flex-wrap:wrap; justify-content:center; gap:18px 44px; }
+  .clients .client{ font-size:clamp(30px,5.4vw,56px); font-weight:500; letter-spacing:-.03em; color:var(--fg);
+    opacity:.94; transition:color .3s ease, opacity .3s ease; }
+  a.client:hover{ color:var(--mint); opacity:1; }
 
   @media (max-width:560px){
     main{ padding:100px 22px; }
-    .prev{ bottom:26px; }
+    .clients{ margin-top:56px; }
   }
 </style>
 </head>
@@ -67,14 +67,16 @@
 <a class="back" href="/">← lohokur.com</a>
 
 <main>
-  <div class="eyebrow">LOHO KUR Studio</div>
   <h1>Work with us.</h1>
   <a class="email" href="mailto:loho@lohokur.com?subject=A%20brief%20for%20LOHO%20KUR%20Studio&body=The%20world%20you're%20building%3A%0A%0AWhat%20you%20need%20from%20us%3A%0A%0ATimeline%3A%0A%0A">Email a brief <span class="arrow">→</span></a>
   <div class="brief">or reach us at <a href="mailto:loho@lohokur.com">loho@lohokur.com</a></div>
-</main>
 
-<a class="prev prev-link" href="https://stemplayer.com" target="_blank" rel="noopener">
-  <span class="lbl">Previously</span> &nbsp;·&nbsp; <span class="client">Stem Player</span>
-</a>
+  <div class="clients">
+    <div class="lbl">Previously</div>
+    <div class="roster">
+      <a class="client" href="https://stemplayer.com" target="_blank" rel="noopener">Stem Player</a>
+    </div>
+  </div>
+</main>
 </body>
 </html>
