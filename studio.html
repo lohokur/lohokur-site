@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio — LOHO KUR</title>
-<meta name="description" content="An agency of artists where software development, AI and branding come together to build worlds. Work with us.">
+<meta name="description" content="We build worlds. Art direction, product design, software development and AI — a collective of hybrid artists, end to end.">
 <meta name="theme-color" content="#07080a">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -31,11 +31,13 @@
     padding:120px 7vw 120px 24px; animation:in .8s ease both; }
   @keyframes in{ from{ opacity:0; } to{ opacity:1; } }
 
-  .panel{ max-width:520px; text-align:right; display:flex; flex-direction:column; align-items:flex-end; }
-  .line{ font-size:clamp(23px,3.1vw,37px); font-weight:500; letter-spacing:-.02em; line-height:1.28; color:var(--fg); }
-  .line .m{ color:var(--mint); }
+  .panel{ max-width:560px; text-align:right; display:flex; flex-direction:column; align-items:flex-end; }
+  .lead{ font-size:clamp(34px,4.6vw,58px); font-weight:500; letter-spacing:-.03em; line-height:.98; color:var(--fg); }
+  .desc{ margin-top:24px; font-size:clamp(15px,1.55vw,18.5px); line-height:1.55; color:var(--muted); max-width:460px; }
+  .desc .m{ color:var(--fg); }
+  .collective{ margin-top:14px; font-size:clamp(13px,1.2vw,15px); line-height:1.5; color:var(--dim); }
 
-  .cta{ margin-top:38px; display:inline-flex; align-items:center; gap:10px; font-size:17px; font-weight:600;
+  .cta{ margin-top:40px; display:inline-flex; align-items:center; gap:10px; font-size:17px; font-weight:600;
     color:var(--fg); transition:color .25s ease, gap .25s ease; }
   .cta .arrow{ font-family:var(--mono); transition:transform .25s ease; }
   .cta:hover{ color:var(--mint); gap:14px; }
@@ -44,7 +46,8 @@
   @media (max-width:640px){
     main{ justify-content:flex-start; padding:110px 24px; }
     .panel{ text-align:left; align-items:flex-start; }
-    .line{ font-size:clamp(24px,7vw,34px); }
+    .lead{ font-size:clamp(32px,9vw,44px); }
+    .desc, .collective{ max-width:none; }
     .glow{ right:-30%; }
   }
 </style>
@@ -56,7 +59,9 @@
 
 <main>
   <div class="panel">
-    <p class="line">An agency of artists where <span class="m">software development, AI and branding</span> come together to build worlds.</p>
+    <h1 class="lead">We build worlds.</h1>
+    <p class="desc">Art direction, product design, software development, and AI — from <span class="m">intelligent systems</span> to <span class="m">intentional visuals</span>.</p>
+    <p class="collective">A collective of hybrid artists, end to end.</p>
     <a class="cta" href="mailto:loho@lohokur.com?subject=A%20brief%20for%20LOHO%20KUR&body=The%20world%20you're%20building%3A%0A%0AWhat%20you%20need%20from%20us%3A%0A%0ATimeline%3A%0A%0A">Work with us <span class="arrow">→</span></a>
   </div>
 </main>
