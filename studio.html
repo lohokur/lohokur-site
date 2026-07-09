@@ -4,217 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studio — LOHO KUR</title>
-<meta name="description" content="LOHO KUR Studio — the creative agency behind the world. Brand direction, identity, campaign and production for fashion brands that want a world, not just a logo.">
+<meta name="description" content="LOHO KUR Studio — work with us. Send a brief.">
 <meta name="theme-color" content="#07080a">
 <style>
   *{ margin:0; padding:0; box-sizing:border-box; }
   :root{
-    --ink:#07080a; --panel:#0e0f12; --fg:#eef1ee; --muted:#9aa39c; --dim:#6d746e;
-    --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.18);
-    --glass:rgba(255,255,255,.045); --glass-line:rgba(255,255,255,.16); --mint:#a9f0d0;
+    --ink:#07080a; --fg:#eef1ee; --muted:#9aa39c; --dim:#6d746e;
+    --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.18); --mint:#a9f0d0;
     --sans:'Helvetica Neue',Helvetica,Arial,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,'Roboto Mono',monospace;
   }
-  html,body{ background:var(--ink); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
-  body{ overflow-x:hidden; min-height:100%; }
+  html,body{ height:100%; background:var(--ink); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
   a{ color:inherit; text-decoration:none; }
-  .wrap{ max-width:1140px; margin:0 auto; padding:0 24px; }
-  .glow{ position:fixed; top:-320px; left:50%; transform:translateX(-50%); width:900px; height:640px;
-    background:radial-gradient(ellipse at center, rgba(169,240,208,.13), transparent 62%); pointer-events:none; z-index:0; }
 
-  /* master header — carried over from the homepage (lohokur.com) verbatim */
-  .chrome{position:absolute;z-index:200}
-  .brand{top:22px;left:34px;height:40px;display:flex;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.24em;color:var(--fg);text-transform:uppercase;
-    text-shadow:0 1px 10px rgba(0,0,0,.6)}
-  .brand b{font-weight:700}
-  .brand sup{font-size:.55em;top:0;color:var(--fg);opacity:.7}
-  .brand a{display:inline-flex;align-items:flex-start;gap:3px}
-  .brand .lk-logo{height:19px;width:auto;display:block;filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55))}
-  nav.pill{top:22px;right:30px}
-  nav.pill ul{list-style:none;display:flex;align-items:stretch;
-    background:rgba(20,24,22,.28);border:1px solid var(--line);border-radius:11px;overflow:hidden;
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-  nav.pill li+li{border-left:1px solid var(--line)}
-  nav.pill a{display:block;padding:11px 20px;font-size:13px;letter-spacing:.01em;color:var(--fg);opacity:.9;
-    transition:background .35s ease,opacity .35s ease}
-  nav.pill a:hover{background:rgba(255,255,255,.10);opacity:1}
-  nav.pill a.active{color:var(--mint);opacity:1}
-  nav.pill li.login a{background:var(--fg);color:var(--ink);opacity:1;font-weight:600}
-  nav.pill li.login a:hover{background:#a9f0d0;color:var(--ink)}
-  .menu-toggle{display:none;position:relative;z-index:2;width:42px;height:38px;padding:0;cursor:pointer;
-    flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    border:1px solid var(--line);border-radius:11px;background:rgba(20,24,22,.35);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-  .menu-toggle span{display:block;width:16px;height:1.5px;background:var(--fg);border-radius:2px;
-    transition:transform .3s ease,opacity .2s ease}
-  nav.pill.open .menu-toggle span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
-  nav.pill.open .menu-toggle span:nth-child(2){opacity:0}
-  nav.pill.open .menu-toggle span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
-  .mobile-login{display:none;height:38px;padding:0 16px;cursor:pointer;
-    font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.02em;
-    color:var(--ink);background:var(--fg);border:1px solid var(--fg);border-radius:11px;
-    box-shadow:0 6px 20px -8px rgba(0,0,0,.6)}
-  @media (max-width:760px){
-    .brand{left:20px;top:18px}
-    nav.pill{top:18px;right:16px;display:flex;align-items:center;gap:10px}
-    .menu-toggle{display:flex}
-    .mobile-login{display:inline-flex;align-items:center}
-    nav.pill ul{position:absolute;top:46px;right:0;flex-direction:column;align-items:stretch;min-width:172px;
-      border-radius:12px;transform-origin:top right;opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;
-      transition:opacity .24s ease,transform .24s ease}
-    nav.pill.open ul{opacity:1;transform:none;pointer-events:auto}
-    nav.pill li+li{border-left:none;border-top:1px solid var(--line)}
-    nav.pill a{padding:13px 18px;font-size:13px;text-align:right}
-    nav.pill li.login{display:none}
-  }
+  /* faint stem-player glow behind the centre */
+  .glow{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:760px; height:760px; border-radius:50%;
+    background:radial-gradient(circle at center, rgba(169,240,208,.10), transparent 62%); pointer-events:none; z-index:0;
+    animation:breathe 7s ease-in-out infinite; }
+  @keyframes breathe{ 0%,100%{ opacity:.7; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:1; transform:translate(-50%,-50%) scale(1.06); } }
 
-  /* hero */
-  header.hero{ position:relative; z-index:1; text-align:center; padding:132px 24px 12px; }
-  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--mint); }
-  h1{ font-size:clamp(36px,5.6vw,62px); font-weight:500; letter-spacing:-.028em; line-height:1.0; margin:16px 0 16px; }
-  .hero-sub{ color:var(--muted); font-size:16.5px; line-height:1.6; max-width:600px; margin:0 auto; }
-  .hero-cta{ display:inline-flex; gap:12px; margin-top:30px; }
-  .btn{ display:inline-block; padding:12px 22px; border-radius:12px; font-size:13.5px; font-weight:600; transition:.2s; cursor:pointer; }
-  .btn.solid{ background:var(--mint); color:var(--ink); }
-  .btn.solid:hover{ background:#c4f5da; }
-  .btn.ghost{ border:1px solid var(--line2); color:var(--fg); }
-  .btn.ghost:hover{ border-color:var(--mint); }
+  /* minimal chrome — just the mark, top-left, home */
+  .brand{ position:fixed; top:24px; left:28px; z-index:20; display:inline-flex; align-items:flex-start; gap:3px; }
+  .brand .lk-logo{ height:18px; width:auto; display:block; filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55)); opacity:.9; }
+  .brand sup{ font-family:var(--mono); font-size:9px; color:var(--fg); opacity:.6; }
+  .back{ position:fixed; top:26px; right:28px; z-index:20; font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--dim); transition:color .3s ease; }
+  .back:hover{ color:var(--fg); }
 
-  section.block{ position:relative; z-index:1; }
-  .lede{ text-align:center; max-width:720px; margin:64px auto 0; }
-  .lede h2{ font-size:clamp(24px,3.4vw,34px); font-weight:500; letter-spacing:-.02em; line-height:1.18; }
-  .lede h2 .m{ color:var(--mint); }
-  .lede p{ color:var(--muted); font-size:15px; line-height:1.7; margin-top:16px; }
+  main{ position:relative; z-index:1; min-height:100%; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:120px 24px; gap:0; animation:in 1s ease both; }
+  @keyframes in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
 
-  /* capabilities */
-  .caps{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:44px; }
-  .cap{ border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:26px 26px 28px; }
-  .cap .k{ font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--mint); }
-  .cap h3{ font-size:19px; font-weight:600; margin:12px 0 8px; letter-spacing:-.01em; }
-  .cap p{ color:var(--muted); font-size:13.5px; line-height:1.65; }
+  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--mint); }
+  h1{ font-size:clamp(44px,8vw,92px); font-weight:500; letter-spacing:-.035em; line-height:.98; margin:22px 0 30px; }
 
-  /* process strip */
-  .flow{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:44px; }
-  .step{ border:1px solid var(--line); border-radius:14px; background:var(--glass); padding:20px 18px; }
-  .step .n{ font-family:var(--mono); font-size:10px; letter-spacing:.1em; color:var(--dim); }
-  .step h4{ font-size:15px; font-weight:600; margin:9px 0 6px; }
-  .step p{ color:var(--muted); font-size:12.5px; line-height:1.55; }
+  .email{ display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:14px;
+    background:var(--fg); color:var(--ink); font-size:15px; font-weight:600; letter-spacing:.01em;
+    transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
+    box-shadow:0 20px 60px -26px rgba(169,240,208,.5); }
+  .email:hover{ background:var(--mint); transform:translateY(-2px); }
+  .email .arrow{ font-family:var(--mono); }
+  .brief{ margin-top:16px; font-size:13px; color:var(--muted); }
+  .brief a{ color:var(--muted); text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--line2); }
+  .brief a:hover{ color:var(--fg); }
 
-  /* closing CTA */
-  .cta-band{ position:relative; z-index:1; margin-top:72px; text-align:center; border:1px solid var(--line2);
-    border-radius:22px; background:radial-gradient(120% 140% at 50% 0%, rgba(169,240,208,.10), transparent 60%), var(--panel);
-    padding:56px 28px; }
-  .cta-band h2{ font-size:clamp(26px,4vw,40px); font-weight:500; letter-spacing:-.025em; }
-  .cta-band p{ color:var(--muted); font-size:15px; margin:14px auto 26px; max-width:480px; line-height:1.6; }
+  /* previous client — quiet, at the foot of the moment */
+  .prev{ position:fixed; left:0; right:0; bottom:34px; z-index:1; text-align:center;
+    font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
+  .prev .lbl{ color:var(--dim); }
+  .prev .client{ color:var(--muted); transition:color .3s ease; }
+  a.prev-link:hover .client{ color:var(--fg); }
 
-  footer{ position:relative; z-index:1; margin-top:72px; border-top:1px solid var(--line); padding:26px 0 60px;
-    display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:11px;
-    color:var(--dim); letter-spacing:.06em; }
-  footer a:hover{ color:var(--fg); }
-
-  @media (max-width:760px){
-    header.hero{ padding:112px 20px 8px; }
-    .caps{ grid-template-columns:1fr; }
-    .flow{ grid-template-columns:1fr 1fr; }
+  @media (max-width:560px){
+    main{ padding:100px 22px; }
+    .prev{ bottom:26px; }
   }
 </style>
 </head>
 <body>
 <div class="glow"></div>
 
-<div class="chrome brand"><a href="/"><img class="lk-logo" alt="LOHO KUR" src="/lk-logo.png"><sup>&reg;</sup></a></div>
-<nav class="chrome pill" aria-label="Primary">
-  <button class="mobile-login" id="loginBtnM" type="button">Go to app</button>
-  <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navList"><span></span><span></span><span></span></button>
-  <ul id="navList">
-    <li><a href="/identities">Identities</a></li>
-    <li><a href="/">Showroom</a></li>
-    <li><a href="/">Research</a></li>
-    <li><a href="/studio" class="active">Studio</a></li>
-    <li><a href="/pricing">Pricing</a></li>
-    <li><a href="mailto:loho@lohokur.com">Contact</a></li>
-    <li class="login"><a href="https://lohokur-app.vercel.app" id="loginBtn">Go to app</a></li>
-  </ul>
-</nav>
+<a class="brand" href="/"><img class="lk-logo" alt="LOHO KUR" src="/lk-logo.png"><sup>&reg;</sup></a>
+<a class="back" href="/">← lohokur.com</a>
 
-<header class="hero">
-  <div class="eyebrow">The agency</div>
-  <h1>The studio behind<br>the world.</h1>
-  <p class="hero-sub">LOHO KUR Studio is the creative agency that builds fashion brands as worlds — direction, identity, campaign and production, end to end. Where the app is the tool, the studio is the hands.</p>
-  <div class="hero-cta">
-    <a class="btn solid" href="mailto:loho@lohokur.com?subject=Working%20with%20LOHO%20KUR%20Studio">Work with us</a>
-    <a class="btn ghost" href="/identities">See the work</a>
-  </div>
-</header>
+<main>
+  <div class="eyebrow">LOHO KUR Studio</div>
+  <h1>Work with us.</h1>
+  <a class="email" href="mailto:loho@lohokur.com?subject=A%20brief%20for%20LOHO%20KUR%20Studio&body=The%20world%20you're%20building%3A%0A%0AWhat%20you%20need%20from%20us%3A%0A%0ATimeline%3A%0A%0A">Email a brief <span class="arrow">→</span></a>
+  <div class="brief">or reach us at <a href="mailto:loho@lohokur.com">loho@lohokur.com</a></div>
+</main>
 
-<div class="wrap">
-
-  <section class="block lede">
-    <h2>Most brands ship a logo. We ship <span class="m">a world</span> — one that people want to live inside.</h2>
-    <p>We partner with founders and houses to build the whole thing: the point of view, the visual language, the characters that carry it, and the garments that make it real. One team from first idea to finished run — no handoffs, no gaps.</p>
-  </section>
-
-  <section class="block">
-    <div class="caps">
-      <div class="cap">
-        <div class="k">Direction</div>
-        <h3>Creative &amp; art direction</h3>
-        <p>The through-line for everything — tone, references, taste. We set the world's rules and hold them across every surface it touches.</p>
-      </div>
-      <div class="cap">
-        <div class="k">Identity</div>
-        <h3>Brand worlds &amp; identity</h3>
-        <p>Naming, logo, type, palette and the cast of characters that give a brand a mythology instead of a mood board. Built to scale into a living archive.</p>
-      </div>
-      <div class="cap">
-        <div class="k">Campaign</div>
-        <h3>Content &amp; campaign</h3>
-        <p>Films, stills, editorial and the social engine underneath them — made to move, not just to sit on a homepage.</p>
-      </div>
-      <div class="cap">
-        <div class="k">Product</div>
-        <h3>Design &amp; production</h3>
-        <p>From techpack to a shipped garment through vetted factories. We take a design to sample, to bulk, to your customer's door.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="block">
-    <div class="flow">
-      <div class="step"><div class="n">01</div><h4>Discover</h4><p>We find the real point of view — the wound, the world, the reason it exists.</p></div>
-      <div class="step"><div class="n">02</div><h4>Build</h4><p>Identity, characters and the visual system that make it unmistakable.</p></div>
-      <div class="step"><div class="n">03</div><h4>Make</h4><p>Design into product — patterns, techpacks, samples, production runs.</p></div>
-      <div class="step"><div class="n">04</div><h4>Launch</h4><p>Campaign, content and the release rhythm that gives it momentum.</p></div>
-    </div>
-  </section>
-
-  <section class="cta-band">
-    <h2>Have a world in your head?</h2>
-    <p>Tell us what you're building. We take a handful of partners at a time and go deep on each one.</p>
-    <a class="btn solid" href="mailto:loho@lohokur.com?subject=Working%20with%20LOHO%20KUR%20Studio">Start a conversation</a>
-  </section>
-
-  <footer>
-    <a href="/">lohokur.com &nbsp;·&nbsp; 2026</a>
-    <a href="mailto:loho@lohokur.com">loho@lohokur.com</a>
-  </footer>
-
-</div>
-
-<script>
-/* master header — hamburger toggle (from homepage) */
-(function(){
-  var APP_URL='https://lohokur-app.vercel.app';
-  var navp=document.querySelector('nav.pill'), mt=document.getElementById('menuToggle');
-  if(!navp) return;
-  function setMenu(o){ navp.classList.toggle('open',o); if(mt) mt.setAttribute('aria-expanded',o?'true':'false'); }
-  var lbm=document.getElementById('loginBtnM');
-  if(lbm) lbm.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); setMenu(false); location.href=APP_URL; });
-  if(mt){
-    mt.addEventListener('click',function(e){ e.stopPropagation(); setMenu(!navp.classList.contains('open')); });
-    navp.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',function(){ setMenu(false); }); });
-    document.addEventListener('click',function(e){ if(navp.classList.contains('open') && !navp.contains(e.target)) setMenu(false); });
-  }
-})();
-</script>
+<a class="prev prev-link" href="https://stemplayer.com" target="_blank" rel="noopener">
+  <span class="lbl">Previously</span> &nbsp;·&nbsp; <span class="client">Stem Player</span>
+</a>
 </body>
 </html>
