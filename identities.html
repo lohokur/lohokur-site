@@ -111,9 +111,12 @@
   .icard .meta .nm{ font-family:var(--sans); font-size:13px; letter-spacing:0; color:rgba(255,255,255,.96);
     text-transform:lowercase; line-height:1.18; }
   .icard .meta .tg{ font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.52); margin-top:1px; }
-  .icard .by{ position:absolute; top:11px; left:11px; font-family:var(--mono); font-size:8px; letter-spacing:.14em;
-    text-transform:uppercase; color:rgba(255,255,255,.72); background:rgba(10,12,11,.55); border:1px solid var(--line);
-    border-radius:20px; padding:4px 9px; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .icard .by{ position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:6px;
+    font-family:var(--mono); font-size:8px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.72);
+    background:rgba(10,12,11,.55); border:1px solid var(--line); border-radius:20px; padding:4px 10px;
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .icard .by img{ height:11px; width:auto; display:block;
+    filter:invert(1) drop-shadow(0 1px 4px rgba(0,0,0,.55)); opacity:.92; }
 
   .empty{ grid-column:1/-1; text-align:center; padding:70px 20px; color:var(--dim);
     font-family:var(--mono); font-size:13px; letter-spacing:.05em; }
@@ -252,7 +255,11 @@
       })(cv,W,(parseInt(W.code.slice(3),10)||i)*13);
       var meta=document.createElement('div'); meta.className='meta';
       meta.innerHTML='<span class="code">'+W.code+'</span><span class="nm">'+esc(W.name)+'</span><span class="tg">'+esc(W.tag)+'</span>';
-      var by=document.createElement('div'); by.className='by'; by.textContent=W.by==='community'?'community':'LK studio';
+      // authorship mark — the LK logo for studio identities; a creator's own logo (W.logo) for community ones
+      var by=document.createElement('div'); by.className='by';
+      var logoSrc=W.logo||(W.by==='community'?'':'/lk-logo.png');
+      if(logoSrc){ var lg=new Image(); lg.src=logoSrc; lg.alt=W.by==='community'?'creator':'LOHO KUR'; by.appendChild(lg); }
+      else { by.textContent='community'; }
       frame.appendChild(cv); frame.appendChild(by); frame.appendChild(meta); el.appendChild(frame);
       grid.appendChild(el);
     });
