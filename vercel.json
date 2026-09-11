@@ -1,4 +1,11 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/portfolio/runway",
+      "destination": "/portfolio/fashion-design",
+      "permanent": true
+    }
+  ]
 }

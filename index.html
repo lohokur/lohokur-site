@@ -100,15 +100,28 @@
   .brand a{display:inline-flex;align-items:flex-start;gap:3px}
   .brand .lk-logo{height:19px;width:auto;display:block;filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55))}
   nav.pill{top:22px;right:30px}
-  nav.pill ul{list-style:none;display:flex;align-items:stretch;
-    background:rgba(20,24,22,.28);border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  /* keep the header menu + logo above the OS canvas overlay and clickable in OS view */
+  body.os nav.pill,body.os .brand{z-index:230;pointer-events:auto}
+  nav.pill > ul{list-style:none;display:flex;align-items:stretch;position:relative;
+    background:rgba(20,24,22,.28);border:1px solid var(--line);border-radius:11px;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  nav.pill > ul > li:first-child > a{border-radius:10px 0 0 10px}
+  nav.pill > ul > li.login > a{border-radius:0 10px 10px 0}
   nav.pill li+li{border-left:1px solid var(--line)}
   nav.pill a{display:block;padding:11px 20px;font-size:13px;letter-spacing:.01em;color:var(--fg);opacity:.9;
     transition:background .35s ease,opacity .35s ease}
   nav.pill a:hover{background:rgba(255,255,255,.10);opacity:1}
   nav.pill li.login a{background:var(--fg);color:var(--ink);opacity:1;font-weight:600}
   nav.pill li.login a:hover{background:#a9f0d0;color:var(--ink)}
+  /* Research dropdown — case studies */
+  nav.pill li.has-sub{position:relative}
+  nav.pill .subm{list-style:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-6px);
+    min-width:160px;padding:5px;background:rgba(20,24,22,.92);border:1px solid var(--line);border-radius:11px;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 24px 60px -22px rgba(0,0,0,.85);
+    opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;z-index:5}
+  nav.pill li.has-sub:hover .subm,nav.pill li.has-sub:focus-within .subm{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  nav.pill .subm li+li{border-left:none;border-top:1px solid var(--line)}
+  nav.pill .subm a{border-radius:7px;white-space:nowrap;text-align:center;opacity:.85}
   /* hamburger — hidden on desktop, shown on mobile */
   .menu-toggle{display:none;position:relative;z-index:2;width:42px;height:38px;padding:0;cursor:pointer;
     flex-direction:column;align-items:center;justify-content:center;gap:4px;
@@ -131,14 +144,19 @@
     nav.pill{top:18px;right:16px;display:flex;align-items:center;gap:10px}
     .menu-toggle{display:flex}
     .mobile-login{display:inline-flex;align-items:center}
-    nav.pill ul{position:absolute;top:46px;right:0;flex-direction:column;align-items:stretch;min-width:172px;
+    nav.pill > ul{position:absolute;top:46px;right:0;flex-direction:column;align-items:stretch;min-width:172px;
       border-radius:12px;transform-origin:top right;
       opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;
       transition:opacity .24s ease,transform .24s ease}
-    nav.pill.open ul{opacity:1;transform:none;pointer-events:auto}
+    nav.pill.open > ul{opacity:1;transform:none;pointer-events:auto}
     nav.pill li+li{border-left:none;border-top:1px solid var(--line)}
     nav.pill a{padding:13px 18px;font-size:13px;text-align:right}
     nav.pill li.login{display:none}
+    /* dropdown shows inline within the mobile menu */
+    nav.pill .subm{position:static;transform:none;opacity:1;pointer-events:auto;min-width:0;
+      padding:0;margin:0;background:rgba(255,255,255,.03);border:none;border-radius:0;box-shadow:none;backdrop-filter:none}
+    nav.pill .subm a{text-align:right;border-radius:0;padding-right:30px;font-size:12px;opacity:.7}
+    nav.pill > ul > li:first-child > a,nav.pill > ul > li.login > a{border-radius:0}
     .core{width:90vw;gap:13px;top:44%}
     .core .glyph{width:31px;height:31px}
     .core .conn{max-width:34px}
@@ -218,6 +236,15 @@
   .os-hero.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .oh-title{font-family:var(--sans);font-weight:300;font-size:clamp(20px,3vw,31px);letter-spacing:-.01em;color:var(--fg);text-shadow:0 2px 18px rgba(0,0,0,.6)}
   .oh-sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+  /* overview scroll cue — prompts people to scroll / tap a node to start the tour */
+  .os-cue{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(8px);z-index:206;
+    display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;text-align:center;
+    opacity:0;transition:opacity .5s ease,transform .5s ease}
+  .os-cue.show{opacity:1;transform:translateX(-50%)}
+  .os-cue .cue-t{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .os-cue .cue-ch{width:22px;height:22px;color:#a9f0d0;animation:cuebob 1.6s ease-in-out infinite}
+  @keyframes cuebob{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(5px);opacity:1}}
+  @media (prefers-reduced-motion:reduce){.os-cue .cue-ch{animation:none}}
   /* tutorial caption */
   .os-tour{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(12px);z-index:210;
     width:min(90vw,440px);padding:15px 22px 16px;text-align:center;
@@ -243,24 +270,6 @@
   .oo-btn:hover{background:#c4f5da} .oo-btn:active{transform:translateY(1px)}
   body.osend .os-canvas{opacity:.2;filter:blur(2px);transition:opacity .6s ease,filter .6s ease}
   body.osend .os-edges .pulse{animation-play-state:paused}
-  /* dock — node palette on the canvas */
-  .os-dock{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:215;
-    display:flex;flex-direction:column;gap:5px;padding:8px;
-    background:linear-gradient(180deg,rgba(23,25,28,.86),rgba(13,14,16,.9));
-    border:1px solid var(--glass-line);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    box-shadow:0 30px 70px -30px rgba(0,0,0,.85);opacity:0;pointer-events:none;transition:opacity .5s ease}
-  body.os .os-dock{opacity:1;pointer-events:auto}
-  body.osend .os-dock,body.sketching .os-dock{opacity:0!important;pointer-events:none!important}
-  .os-dock .dk-h{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-align:center;padding:1px 0 4px}
-  .os-dock button{position:relative;width:46px;height:46px;display:flex;align-items:center;justify-content:center;
-    border:1px solid transparent;border-radius:12px;background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;
-    transition:background .25s,color .25s,border-color .25s}
-  .os-dock button:hover{background:rgba(169,240,208,.12);color:#a9f0d0;border-color:var(--glass-line)}
-  .os-dock button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-  .os-dock button .lbl{position:absolute;left:54px;white-space:nowrap;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--fg);background:rgba(13,14,16,.94);border:1px solid var(--glass-line);border-radius:7px;padding:5px 9px;
-    opacity:0;transform:translateX(-4px);pointer-events:none;transition:opacity .2s,transform .2s}
-  .os-dock button:hover .lbl{opacity:1;transform:none}
   .os-node .spawn-body{display:flex;flex-direction:column;align-items:center;gap:9px;padding:24px 12px;color:var(--muted)}
   .os-node .spawn-body svg{width:30px;height:30px;fill:none;stroke:#a9f0d0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
   .os-node .spawn-body span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
@@ -350,6 +359,20 @@
   .port{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;background:var(--ink);border:1px solid rgba(233,240,236,.42);transform:translateY(-50%)}
   .port.l{left:-5px}.port.r{right:-5px}
   @media (prefers-reduced-motion:reduce){.osview{transition:none}.os-node,.os-edges path,.os-head,.os-back{transition:none}}
+
+  /* mobile overrides for the canvas-demo — placed AFTER the base OS rules so equal-specificity
+     selectors win. The base .os-hero is only ~50vw wide (fixed + left:50% shrink-to-fit),
+     which cramps the title on phones; give it full width and reset the condensed type. */
+  @media (max-width:720px){
+    .os-hero{top:118px;left:16px;right:16px;width:auto;padding:0;transform:translateY(-8px) !important}
+    .os-hero.show{transform:translateY(0) !important}
+    .oh-title{font-size:22px;line-height:1.28;letter-spacing:0;font-weight:400;text-wrap:balance}
+    .oh-sub{font-size:9.5px;letter-spacing:.1em;margin-top:8px}
+    .os-cue{bottom:24px}
+    .os-cue .cue-t{font-size:9.5px;letter-spacing:.12em}
+    .os-tour{bottom:22px;padding:13px 18px 14px}
+    .os-back{bottom:78px}
+  }
 </style>
 
 <div id="page">
@@ -377,22 +400,30 @@
     <div class="cap" aria-hidden="true">Imagine it</div>
   </div>
 
-  <div class="chrome brand"><a href="#"><img class="lk-logo" alt="LOHO KUR" src="data:image/png;base64,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"><sup>&reg;</sup></a></div>
-  <nav class="chrome pill" aria-label="Primary">
-    <button class="mobile-login" id="loginBtnM" type="button">Go to app</button>
-    <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navList"><span></span><span></span><span></span></button>
-    <ul id="navList">
-      <li><a href="/identities">Identities</a></li>
-      <li><a href="#">Showroom</a></li>
-      <li><a href="#">Research</a></li>
-      <li><a href="/studio">Studio</a></li>
-      <li><a href="/pricing">Pricing</a></li>
-      <li><a href="#">Contact</a></li>
-      <li class="login"><a href="https://lohokur-app.vercel.app" id="loginBtn">Go to app</a></li>
-    </ul>
-  </nav>
+  <div class="chrome brand"><a href="#" id="brandHome" aria-label="LOHO KUR — home"><img class="lk-logo" alt="LOHO KUR" src="data:image/png;base64,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"><sup>&reg;</sup></a></div>
   <div class="chrome entercue" id="enterCue" role="button" tabindex="0" aria-label="Enter the canvas"><span></span></div>
 </div>
+
+<!-- header menu: body-level (a sibling of #page and .osview) so it always sits
+     above the OS canvas overlay and stays clickable in the canvas demo view -->
+<nav class="chrome pill" aria-label="Primary">
+  <button class="mobile-login" id="loginBtnM" type="button">Go to app</button>
+  <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navList"><span></span><span></span><span></span></button>
+  <ul id="navList">
+    <li><a href="/identities">Identities</a></li>
+    <li><a href="#">Showroom</a></li>
+    <li class="has-sub">
+      <a href="#" class="sub-toggle" aria-haspopup="true" aria-expanded="false">Research</a>
+      <ul class="subm">
+        <li><a href="#">Case Studies</a></li>
+      </ul>
+    </li>
+    <li><a href="/studio">Studio</a></li>
+    <li><a href="/pricing">Pricing</a></li>
+    <li><a href="mailto:studio@lohokur.com">Contact</a></li>
+    <li class="login"><a href="https://lohokur-app.vercel.app" id="loginBtn">Go to app</a></li>
+  </ul>
+</nav>
 
 <div class="osview" id="osview" aria-hidden="true">
   <div class="os-canvas" id="osCanvas">
@@ -492,6 +523,10 @@
     <h2 class="oh-title">Your whole supply chain, on one canvas</h2>
     <p class="oh-sub">from a sketch to a shipped product &mdash; nothing leaves this page</p>
   </div>
+  <div class="os-cue" id="osCue" aria-hidden="true">
+    <span class="cue-t">scroll to explore &mdash; or tap a node</span>
+    <svg class="cue-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
   <div class="os-tour" id="osTour" aria-live="polite">
     <div class="ot-step"><span id="otNum">1</span> / <span id="otTot">7</span></div>
     <div class="ot-title" id="otTitle">Idea</div>
@@ -523,8 +558,17 @@
 
   function setView(Tx,Ty,Z){ if(canvas) canvas.style.transform='translate('+Tx.toFixed(1)+'px,'+Ty.toFixed(1)+'px) scale('+Z.toFixed(4)+')'; }
   function showOutro(on){ if(outro) outro.classList.toggle('show',on); b.classList.toggle('osend',on); }
-  function showHeader(on){ var h=document.getElementById('osHero'); if(h) h.classList.toggle('show',on); }
-  function overview(){ var vw=innerWidth,vh=innerHeight,Z=Math.min((vw-80)/2100,0.92);
+  function showHeader(on){ var h=document.getElementById('osHero'); if(h) h.classList.toggle('show',on);
+    var c=document.getElementById('osCue'); if(c) c.classList.toggle('show',on); } /* scroll cue rides the overview state */
+  function overview(){ var vw=innerWidth,vh=innerHeight;
+    /* mobile: the 2100px pipeline can't legibly fit width (would be a tiny strip),
+       so frame the first node at a readable zoom — scroll/tap then walks the flow */
+    if(vw<=720){ var n1=canvas&&canvas.querySelector('.os-node.n1');
+      if(n1){ var w=n1.offsetWidth,h=n1.offsetHeight,cx=n1.offsetLeft+w/2,cy=n1.offsetTop+h/2;
+        var Zm=Math.min((vw*0.82)/w,(vh*0.4)/h,1.7);
+        /* sit the node lower so the header text up top has breathing room */
+        setView(vw/2-Zm*cx, vh*0.6-Zm*cy, Zm); return; } }
+    var Z=Math.min((vw-80)/2100,0.92);
     setView((vw-2100*Z)/2, Math.max(64,(vh-560*Z)/2-30), Z); }
   function zoomNode(node){ if(!node){ overview(); return; }
     var vw=innerWidth,vh=innerHeight,w=node.offsetWidth,h=node.offsetHeight,cx=node.offsetLeft+w/2,cy=node.offsetTop+h/2;
@@ -547,10 +591,11 @@
   function enter(){
     if(scene!=='hero'||lock)return; scene='os'; lock=true; t=0;
     var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var noFly=reduce||matchMedia('(max-width:720px)').matches; /* skip the card float-in on mobile */
     var card=document.querySelector('#stage .card[data-code="LK-016"]')||document.querySelector('#stage .card');
     var n1=document.querySelector('#osview .os-node.n1');
     var fv=card&&(card.querySelector('.float')||card);
-    if(reduce||!fv||!n1){ b.classList.add('os'); overview(); showHeader(true); setTimeout(function(){lock=false;},700); return; }
+    if(noFly||!fv||!n1){ b.classList.add('os'); overview(); showHeader(true); setTimeout(function(){lock=false;},700); return; }
     var sr=fv.getBoundingClientRect();
     var fc=document.createElement('div'); fc.className='flycard';
     fc.style.left=sr.left+'px'; fc.style.top=sr.top+'px'; fc.style.width=sr.width+'px'; fc.style.height=sr.height+'px';
@@ -591,12 +636,38 @@
   var cue=document.getElementById('enterCue'); if(cue){ cue.addEventListener('click',enter); cue.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' ')enter(); }); }
   var back=document.getElementById('osBack'); if(back) back.addEventListener('click',function(){ step(-1); });
   var ob=document.getElementById('ooBtn'); if(ob) ob.addEventListener('click',function(){ var lb=document.getElementById('loginBtn'); if(lb) lb.click(); });
-  /* touch: swipe up = next stage, swipe down = back (ignored when starting on a node so drag still works) */
-  var tsY=null;
-  window.addEventListener('touchstart',function(e){ tsY = e.target.closest('.os-node') ? null : e.touches[0].clientY; },{passive:true});
-  window.addEventListener('touchend',function(e){ if(tsY==null||lock) return; var dy=e.changedTouches[0].clientY-tsY;
-    if(scene==='hero'){ if(dy<-42) enter(); } else { if(dy<-42) step(1); else if(dy>42) step(-1); } tsY=null; },{passive:true});
-  function onResize(){ if(scene==='os') render(); else overview(); }
+  /* touch: swipe up/left = next stage, swipe down/right = back. On desktop touchscreens,
+     a swipe starting on a node is left to the drag logic; on mobile nodes don't drag. */
+  var tsX=null,tsY=null;
+  window.addEventListener('touchstart',function(e){
+    if(e.target.closest('.os-node') && !matchMedia('(max-width:720px)').matches){ tsX=tsY=null; return; }
+    tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
+  window.addEventListener('touchend',function(e){ if(tsY==null||lock) return;
+    var dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY;
+    if(Math.abs(dx)>Math.abs(dy)){ /* horizontal swipe follows the left→right pipeline */
+      if(scene!=='hero'){ if(dx<-42) step(1); else if(dx>42) step(-1); } }
+    else { if(scene==='hero'){ if(dy<-42) enter(); } else { if(dy<-42) step(1); else if(dy>42) step(-1); } }
+    tsX=tsY=null; },{passive:true});
+  var cueT=document.querySelector('#osCue .cue-t');
+  function setCueText(){ if(cueT) cueT.textContent = matchMedia('(max-width:720px)').matches ? 'tap to walk the pipeline' : 'scroll to explore — or tap a node'; }
+  setCueText();
+  function onResize(){ setCueText(); if(scene==='os') render(); else overview(); }
+  /* mobile: nodes aren't draggable — a tap anywhere on the canvas advances the walkthrough */
+  var osv=document.getElementById('osview');
+  if(osv) osv.addEventListener('click',function(e){
+    if(!matchMedia('(max-width:720px)').matches || scene!=='os' || lock) return;
+    if(e.target.closest('nav.pill,.oo-btn,.os-back,a,button,input,textarea,select')) return; /* let real controls work */
+    step(1);
+  });
+  /* logo → home: lift it out of #page so it clears the OS overlay, and on click leave the
+     canvas view and return to the top of the home page */
+  var brandEl=document.querySelector('.chrome.brand');
+  if(brandEl && brandEl.parentNode!==document.body) document.body.appendChild(brandEl);
+  var brandHome=document.getElementById('brandHome');
+  if(brandHome) brandHome.addEventListener('click',function(e){ e.preventDefault();
+    if(scene==='os') exit(); window.scrollTo(0,0); });
+  /* desktop: clicking a canvas node kicks off the card-by-card walkthrough from step 1 */
+  window.osTour={ start:function(){ if(scene==='os' && !lock && t===0){ t=1; render(); cooldown(); } } };
   overview(); window.addEventListener('resize',onResize);
 })();
 </script>
@@ -638,19 +709,22 @@
   var drag=null, zTop=20;
   /* delegation so dock-spawned nodes are draggable too */
   canvas.addEventListener('pointerdown',function(e){
+    if(matchMedia('(max-width:720px)').matches) return; /* nodes are not draggable on mobile */
     var n=e.target.closest('.os-node'); if(!n||!canvas.contains(n)) return;
     if(e.target.closest('input,button,a,textarea,select,.port')) return;
-    drag={n:n,sx:e.clientX,sy:e.clientY,l:n.offsetLeft,t:n.offsetTop,s:scale()};
+    drag={n:n,sx:e.clientX,sy:e.clientY,l:n.offsetLeft,t:n.offsetTop,s:scale(),moved:false};
     n.style.zIndex=(++zTop); n.classList.add('dragging'); e.preventDefault();
   });
   window.addEventListener('pointermove',function(e){
     if(!drag) return;
+    if(Math.abs(e.clientX-drag.sx)>4||Math.abs(e.clientY-drag.sy)>4) drag.moved=true;
     var G=30;  /* snap to the canvas dot-grid */
     drag.n.style.left=(Math.round((drag.l+(e.clientX-drag.sx)/drag.s)/G)*G)+'px';
     drag.n.style.top=(Math.round((drag.t+(e.clientY-drag.sy)/drag.s)/G)*G)+'px';
     redraw();
   });
-  function endDrag(){ if(drag){ drag.n.classList.remove('dragging'); drag=null; } }
+  function endDrag(){ if(drag){ var tap=!drag.moved; drag.n.classList.remove('dragging'); drag=null;
+    if(tap && window.osTour) window.osTour.start(); } } /* a click (no drag) starts the walkthrough */
   window.addEventListener('pointerup',endDrag); window.addEventListener('pointercancel',endDrag);
   window.addEventListener('resize',redraw);
   window.addEventListener('load',redraw);
@@ -718,17 +792,6 @@
 })();
 </script>
 
-<div class="os-dock" id="osDock" aria-label="Add node">
-  <div class="dk-h">Add</div>
-  <button type="button" data-type="sketch" aria-label="Sketch"><svg viewBox="0 0 24 24"><path d="M5 19l1-3.2 8.6-8.6 2.2 2.2-8.6 8.6z"/><path d="M13.6 6.4l2.2 2.2"/></svg><span class="lbl">Sketch</span></button>
-  <button type="button" data-type="visualise" aria-label="Visualise"><svg viewBox="0 0 24 24"><path d="M2.4 12S6 5.6 12 5.6 21.6 12 21.6 12 18 18.4 12 18.4 2.4 12 2.4 12Z"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Visualise</span></button>
-  <button type="button" data-type="extract" aria-label="Extract"><svg viewBox="0 0 24 24"><path d="M4 5H20L14 12V19L10 21V12Z"/></svg><span class="lbl">Extract</span></button>
-  <button type="button" data-type="pattern" aria-label="Pattern maker"><svg viewBox="0 0 24 24"><path d="M4 19H20L4 6Z"/><path d="M8.5 19v-2M12 19v-3M15.5 19v-2"/></svg><span class="lbl">Pattern maker</span></button>
-  <button type="button" data-type="techpack" aria-label="Techpack"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h7L18 8v12.5h-11.5Z"/><path d="M13.5 3.5V8h4.5"/><path d="M9 12h6M9 15h6M9 18h3.5"/></svg><span class="lbl">Techpack</span></button>
-  <button type="button" data-type="manufacture" aria-label="Manufacture"><svg viewBox="0 0 24 24"><rect x="7" y="4.5" width="10" height="15" rx="1.5"/><path d="M7 8h10M7 16h10M10 10.7h4M10 13.3h4"/></svg><span class="lbl">Manufacture</span></button>
-  <button type="button" data-type="ship" aria-label="Ship"><svg viewBox="0 0 24 24"><path d="M12 3.3l8 4.1v9L12 20.7l-8-4.3v-9Z"/><path d="M4 7.4l8 4.2 8-4.2"/><path d="M12 11.6v9.1"/></svg><span class="lbl">Ship</span></button>
-</div>
-
 <div class="sketch-mode" id="sketchMode">
   <div class="sk-title">Sketch your idea &mdash; or drop in an image</div>
   <canvas class="sk-pad" id="skPad" width="680" height="460"></canvas>
@@ -778,9 +841,16 @@
   function setMenu(o){ navp.classList.toggle('open',o); if(mt) mt.setAttribute('aria-expanded',o?'true':'false'); }
   var lbm=document.getElementById('loginBtnM');
   if(lbm) lbm.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); setMenu(false); location.href=APP_URL; });
+  /* Research dropdown parent: don't navigate; on mobile, expand the submenu inline */
+  navp.querySelectorAll('.sub-toggle').forEach(function(a){
+    a.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation();
+      var li=a.closest('.has-sub'); if(li) li.classList.toggle('open');
+      a.setAttribute('aria-expanded', li&&li.classList.contains('open')?'true':'false'); });
+  });
   if(mt){
     mt.addEventListener('click',function(e){ e.stopPropagation(); setMenu(!navp.classList.contains('open')); });
-    navp.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',function(){ setMenu(false); }); });
+    /* close the mobile menu when a real destination link is tapped (not the dropdown toggle) */
+    navp.querySelectorAll('a:not(.sub-toggle)').forEach(function(a){ a.addEventListener('click',function(){ setMenu(false); }); });
     document.addEventListener('click',function(e){ if(navp.classList.contains('open') && !navp.contains(e.target)) setMenu(false); });
   }
   auth.querySelectorAll('[data-close]').forEach(function(el){ el.addEventListener('click',close); });
