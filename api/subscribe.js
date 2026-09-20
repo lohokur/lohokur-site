@@ -27,7 +27,7 @@ function welcome() {
       '',
       '* cracked \u2014 insanely good at something. homemade, non-corporate, dope.',
       '',
-      '-loho',
+      '\u2014 loho',
     ].join('\n'),
   };
 }
