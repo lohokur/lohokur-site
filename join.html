@@ -19,6 +19,7 @@
               border-left:2px solid #fff; margin:24px 0 0; padding:0 0 0 14px; }
   /* field and button stay on one row, at every width */
   form{ margin:36px 0 0; display:flex; gap:8px; justify-content:center; }
+  form[hidden]{ display:none; }  /* display:flex would otherwise beat the hidden attribute */
   /* iOS styles form controls by default (rounded, tinted) — strip that back so
      the field and button look the same plain box everywhere */
   input[type=email], button{ -webkit-appearance:none; appearance:none; border-radius:0;
