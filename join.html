@@ -3,151 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join the list — LOHO KUR</title>
-<meta name="description" content="Releases before they are public, the thinking behind the work, and the occasional invitation. One address, nothing else.">
-<meta property="og:title" content="Join the list — LOHO KUR">
-<meta property="og:description" content="Releases before they are public, the thinking behind the work, and the occasional invitation.">
-<meta property="og:url" content="https://lohokur.com/join">
-<meta name="theme-color" content="#07080a">
-<style>
-  @font-face{
-    font-family:'Redaction 50 Italic';
-    src:url('/fonts/redaction-50-italic.woff2') format('woff2');
-    font-weight:400; font-style:italic; font-display:swap;
-  }
-  *{ margin:0; padding:0; box-sizing:border-box; }
-  :root{
-    --ink:#07080a; --fg:#eef1ee; --muted:#9aa39c; --dim:#6d746e;
-    --line:rgba(255,255,255,.12); --line2:rgba(255,255,255,.28); --mint:#a9f0d0;
-    --sans:'Helvetica Neue',Helvetica,Arial,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,'Roboto Mono',monospace;
-  }
-  html,body{ min-height:100%; background:var(--ink); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
-  a{ color:inherit; text-decoration:none; }
-
-  .glow{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:760px; height:760px; border-radius:50%;
-    background:radial-gradient(circle at center, rgba(169,240,208,.085), transparent 62%); pointer-events:none; z-index:0;
-    animation:breathe 7s ease-in-out infinite; }
-  @keyframes breathe{ 0%,100%{ opacity:.7; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:1; transform:translate(-50%,-50%) scale(1.05); } }
-
-  .brand{ position:fixed; top:24px; left:28px; z-index:20; display:inline-flex; align-items:flex-start; gap:3px; }
-  .brand .lk-logo{ height:18px; width:auto; display:block; filter:invert(1) drop-shadow(0 1px 8px rgba(0,0,0,.55)); opacity:.9; }
-  .brand sup{ font-family:var(--mono); font-size:9px; color:var(--fg); opacity:.6; }
-
-  main{ position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; justify-content:center;
-    padding:120px 24px; animation:in .8s ease both; }
-  @keyframes in{ from{ opacity:0; } to{ opacity:1; } }
-
-  .panel{ width:100%; max-width:520px; }
-  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); }
-  .lead{ margin-top:18px; font-size:clamp(34px,5.2vw,56px); font-weight:500; letter-spacing:-.03em; line-height:1; }
-  .lead em{ font-family:'Redaction 50 Italic', Georgia, serif; font-style:italic; font-weight:400; }
-  .desc{ margin-top:22px; font-size:clamp(15px,1.5vw,18px); line-height:1.55; color:var(--muted); }
-  .desc .m{ color:var(--fg); }
-
-  form{ margin-top:34px; display:flex; gap:10px; }
-  input[type=email]{ flex:1; min-width:0; background:rgba(255,255,255,.04); color:var(--fg);
-    border:1px solid var(--line); border-radius:2px; padding:15px 16px; font-family:var(--sans); font-size:16px;
-    transition:border-color .25s ease, background .25s ease; }
-  input[type=email]::placeholder{ color:var(--dim); }
-  input[type=email]:focus{ outline:none; border-color:var(--line2); background:rgba(255,255,255,.06); }
-  button{ background:var(--fg); color:var(--ink); border:0; border-radius:2px; padding:15px 24px; cursor:pointer;
-    font-family:var(--sans); font-size:15px; font-weight:600; letter-spacing:.01em;
-    transition:background .25s ease, opacity .25s ease; }
-  button:hover{ background:var(--mint); }
-  button:disabled{ opacity:.5; cursor:default; background:var(--fg); }
-
-  /* the honeypot — hidden from people, left in the DOM for the machines */
-  .hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
-
-  .note{ margin-top:16px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; line-height:1.7; color:var(--dim); min-height:19px; }
-  .note.err{ color:#f0a9a9; }
-  .note.ok{ color:var(--mint); }
-
-  .done{ display:none; }
-  .done .lead{ margin-top:0; }
-  body.sent form, body.sent .desc, body.sent .lead, body.sent .eyebrow{ display:none; }
-  body.sent .done{ display:block; animation:in .6s ease both; }
-
-  .back{ margin-top:52px; font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
-  .back a{ color:var(--muted); transition:color .3s ease; }
-  .back a:hover{ color:var(--mint); }
-
-  @media (max-width:560px){
-    main{ padding:110px 24px 80px; }
-    form{ flex-direction:column; }
-    button{ padding:15px 20px; }
-  }
-</style>
+<title>cracked* software</title>
+<meta name="theme-color" content="#000000">
+<style>body{background:#000;color:#fff}</style>
 </head>
 <body>
-<div class="glow"></div>
 
-<a class="brand" href="/"><img class="lk-logo" alt="LOHO KUR" src="/lk-logo.png"><sup>&reg;</sup></a>
+<h1>cracked* software.</h1>
 
-<main>
-  <div class="panel">
-    <div class="eyebrow">The list</div>
-    <h1 class="lead">Hear it <em>first</em>.</h1>
-    <p class="desc">Releases before they are public, the <span class="m">thinking behind the work</span>, and the occasional invitation. One address is all it takes.</p>
+<p>* cracked means homemade, non-corporate, dope software.</p>
 
-    <form id="f" novalidate>
-      <input type="email" id="email" name="email" placeholder="you@email.com" autocomplete="email" required aria-label="Email address">
-      <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-      <button type="submit" id="go">Join</button>
-    </form>
-    <p class="note" id="note">No noise. Leave whenever you like.</p>
+<form id="f">
+  <input type="email" id="email" placeholder="you@email.com" autocomplete="email" required>
+  <input type="text" id="website" tabindex="-1" autocomplete="off" hidden>
+  <button type="submit" id="go">submit</button>
+</form>
 
-    <div class="done">
-      <h1 class="lead">You're <em>in</em>.</h1>
-      <p class="desc" id="doneline">Watch your inbox — the next one comes from LOHO KUR.</p>
-    </div>
-
-    <div class="back">&larr;&nbsp; <a href="/">lohokur.com</a></div>
-  </div>
-</main>
+<p id="note"></p>
 
 <script>
   const f = document.getElementById('f');
   const email = document.getElementById('email');
   const go = document.getElementById('go');
   const note = document.getElementById('note');
-  const doneline = document.getElementById('doneline');
-
-  function say(text, kind) {
-    note.textContent = text;
-    note.className = 'note' + (kind ? ' ' + kind : '');
-  }
 
   f.addEventListener('submit', async (e) => {
     e.preventDefault();
     const value = email.value.trim();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) {
-      say('That address does not look right.', 'err');
-      email.focus();
+      note.textContent = 'that address does not look right.';
       return;
     }
 
     go.disabled = true;
-    say('Adding you…');
+    note.textContent = 'adding you...';
 
     try {
       const r = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: value,
-          source: 'join',
-          website: f.website.value,
-        }),
+        body: JSON.stringify({ email: value, source: 'join', website: document.getElementById('website').value }),
       });
       const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data.message || 'Something went wrong.');
+      if (!r.ok) throw new Error(data.message || 'something went wrong.');
 
-      if (data.new === false) doneline.textContent = 'You were already on the list — nothing to do.';
-      document.body.classList.add('sent');
+      f.hidden = true;
+      note.textContent = data.new === false ? 'you were already on the list.' : "you're in.";
     } catch (err) {
       go.disabled = false;
-      say(err.message || 'Something went wrong. Try again, or email loho@lohokur.com.', 'err');
+      note.textContent = err.message || 'something went wrong. try again, or email loho@lohokur.com.';
     }
   });
 </script>
