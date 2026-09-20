@@ -18,6 +18,13 @@
   blockquote{ display:inline-block; text-align:left; font-style:italic;
               border-left:2px solid #fff; margin:24px 0 0; padding:0 0 0 14px; }
   form{ margin:36px 0 0; }
+  /* iOS styles form controls by default (rounded, tinted) — strip that back so
+     the field and button look the same plain box everywhere */
+  input[type=email], button{ -webkit-appearance:none; appearance:none; border-radius:0;
+    box-sizing:border-box; font-family:inherit; font-size:16px; padding:12px;
+    background:#fff; color:#000; border:1px solid #000; }
+  input[type=email]{ width:min(340px,100%); }
+  button{ padding:12px 20px; }
   p.note{ min-height:1.2em; }
 </style>
 </head>
