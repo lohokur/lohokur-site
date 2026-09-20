@@ -13,7 +13,9 @@
   footer{ position:fixed; bottom:20px; left:0; right:0; text-align:center; }
   footer img{ width:70px; filter:invert(1); opacity:.7; }
   h1{ font-size:clamp(38px,11vw,56px); font-weight:bold; margin:0; }
-  .def{ margin:14px 0 0; }
+  /* the definition reads as one line; it only wraps where a line that long
+     would have to shrink past readable */
+  .def{ margin:14px 0 0; white-space:nowrap; font-size:clamp(12px,2.35vw,16px); }
   /* urban-dictionary example: italic, left-barred, left-aligned inside the centred column */
   blockquote{ display:inline-block; text-align:left; font-style:italic;
               border-left:2px solid #fff; margin:24px 0 0; padding:0 0 0 14px; }
@@ -34,7 +36,7 @@
     html,body{ height:100dvh; overflow:hidden; }
     body{ padding:20px 16px 64px; }
     h1{ font-size:clamp(30px,10vw,44px); }
-    .def{ font-size:14px; margin-top:10px; }
+    .def{ white-space:normal; font-size:14px; margin-top:10px; }
     blockquote{ font-size:14px; margin-top:16px; }
     form{ margin-top:22px; }
     footer{ bottom:14px; }
@@ -47,7 +49,7 @@
 
   <h1>cracked*</h1>
 
-  <p class="def">* insanely good at something. homemade software, non-corporate, dope.</p>
+  <p class="def">* insanely good at something. homemade software, anti-corporate, dope.</p>
 
   <blockquote>
     Them: is this software legit?<br>
