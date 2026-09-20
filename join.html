@@ -5,21 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>cracked* software</title>
 <meta name="theme-color" content="#000000">
-<style>body{background:#000;color:#fff}</style>
+<style>
+  body{ background:#000; color:#fff; min-height:100vh; margin:0;
+        display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 24px; }
+  .mid{ max-width:560px; }
+  /* the mark is black artwork — inverted so it reads on black */
+  img{ width:150px; filter:invert(1); }
+  h1{ font-size:56px; font-weight:bold; margin:28px 0 0; }
+  .def{ margin:14px 0 0; }
+  /* urban-dictionary example: italic, left-barred, left-aligned inside the centred column */
+  blockquote{ display:inline-block; text-align:left; font-style:italic;
+              border-left:2px solid #fff; margin:24px 0 0; padding:0 0 0 14px; }
+  form{ margin:36px 0 0; }
+  p.note{ min-height:1.2em; }
+</style>
 </head>
 <body>
+<div class="mid">
 
-<h1>cracked* software.</h1>
+  <img src="/lk-logo.png" alt="LOHO KUR">
 
-<p>* cracked means homemade, non-corporate, dope software.</p>
+  <h1>cracked*</h1>
 
-<form id="f">
-  <input type="email" id="email" placeholder="you@email.com" autocomplete="email" required>
-  <input type="text" id="website" tabindex="-1" autocomplete="off" hidden>
-  <button type="submit" id="go">submit</button>
-</form>
+  <p class="def">* homemade, non-corporate, dope software.</p>
 
-<p id="note"></p>
+  <blockquote>
+    Them: who built this?<br>
+    You: nobody did. it's cracked.
+  </blockquote>
+
+  <form id="f">
+    <input type="email" id="email" placeholder="you@email.com" autocomplete="email" required>
+    <input type="text" id="website" tabindex="-1" autocomplete="off" hidden>
+    <button type="submit" id="go">submit</button>
+  </form>
+
+  <p class="note" id="note"></p>
+
+</div>
 
 <script>
   const f = document.getElementById('f');
