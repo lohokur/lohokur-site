@@ -11,27 +11,24 @@ const SOURCES = new Set(['lohokur.com', 'join', 'footer', 'studio']);
 const SEND_FROM = 'LOHO KUR <hello@lohokur.com>';
 const REPLY_TO = 'loho@lohokur.com';
 
-// Plain text on white — the same voice as the page, nothing dressed up.
+// Text only — no HTML wrapper, so no mail client paints a box behind it and
+// it renders in whatever the reader's inbox already uses.
 function welcome() {
   return {
-    subject: "you're in.",
+    subject: "you're in, hacker",
     text: [
-      'you signed up at lohokur.com.',
+      'welcome team',
       '',
-      'cracked* — insanely good at something. homemade software, non-corporate, dope.',
+      'every sunday I drop new software. homemade, non-corporate, built by us, the people, against corporate greed.',
       '',
-      "that's what lands here: the things I build, before anyone else sees them.",
-      'no noise, and you can leave whenever you like.',
+      "you're a hacker. everyone is \u2014 most people just haven't been shown yet. these emails will carry hacker tips, and updates on getting popular software in a new way*.",
       '',
-      '— loho',
+      'first drop lands sunday.',
+      '',
+      '* cracked \u2014 insanely good at something. homemade, non-corporate, dope.',
+      '',
+      '-loho',
     ].join('\n'),
-    html:
-      `<div style="background:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#000">
-         <p style="margin:0 0 14px">you signed up at lohokur.com.</p>
-         <p style="margin:0 0 14px">cracked* &mdash; insanely good at something. homemade software, non-corporate, dope.</p>
-         <p style="margin:0 0 14px">that&rsquo;s what lands here: the things I build, before anyone else sees them.<br>no noise, and you can leave whenever you like.</p>
-         <p style="margin:0">&mdash; loho</p>
-       </div>`,
   };
 }
 
@@ -84,7 +81,7 @@ export default async function handler(req, res) {
         const r = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ from: SEND_FROM, to: [email], reply_to: REPLY_TO, subject: note.subject, text: note.text, html: note.html }),
+          body: JSON.stringify({ from: SEND_FROM, to: [email], reply_to: REPLY_TO, subject: note.subject, text: note.text }),
         });
         if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`);
       } catch (err) {
