@@ -6,26 +6,39 @@
 <title>cracked* software</title>
 <meta name="theme-color" content="#000000">
 <style>
-  body{ background:#000; color:#fff; min-height:100vh; margin:0;
+  body{ background:#000; color:#fff; min-height:100dvh; margin:0; box-sizing:border-box;
         display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 24px; }
   .mid{ max-width:560px; }
   /* the mark is black artwork — inverted so it reads on black */
   footer{ position:fixed; bottom:20px; left:0; right:0; text-align:center; }
   footer img{ width:70px; filter:invert(1); opacity:.7; }
-  h1{ font-size:56px; font-weight:bold; margin:0; }
+  h1{ font-size:clamp(38px,11vw,56px); font-weight:bold; margin:0; }
   .def{ margin:14px 0 0; }
   /* urban-dictionary example: italic, left-barred, left-aligned inside the centred column */
   blockquote{ display:inline-block; text-align:left; font-style:italic;
               border-left:2px solid #fff; margin:24px 0 0; padding:0 0 0 14px; }
-  form{ margin:36px 0 0; }
+  /* field and button stay on one row, at every width */
+  form{ margin:36px 0 0; display:flex; gap:8px; justify-content:center; }
   /* iOS styles form controls by default (rounded, tinted) — strip that back so
      the field and button look the same plain box everywhere */
   input[type=email], button{ -webkit-appearance:none; appearance:none; border-radius:0;
     box-sizing:border-box; font-family:inherit; font-size:16px; padding:12px;
     background:#fff; color:#000; border:1px solid #000; }
-  input[type=email]{ width:min(340px,100%); }
+  input[type=email]{ flex:1 1 auto; min-width:0; max-width:340px; }
   button{ padding:12px 20px; }
   p.note{ min-height:1.2em; }
+
+  /* phones: everything sits inside one screen, nothing to scroll */
+  @media (max-height:740px), (max-width:600px){
+    html,body{ height:100dvh; overflow:hidden; }
+    body{ padding:20px 16px 64px; }
+    h1{ font-size:clamp(30px,10vw,44px); }
+    .def{ font-size:14px; margin-top:10px; }
+    blockquote{ font-size:14px; margin-top:16px; }
+    form{ margin-top:22px; }
+    footer{ bottom:14px; }
+    footer img{ width:56px; }
+  }
 </style>
 </head>
 <body>
