@@ -10,8 +10,9 @@
         display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 24px; }
   .mid{ max-width:560px; }
   /* the mark is black artwork — inverted so it reads on black */
-  img{ width:150px; filter:invert(1); }
-  h1{ font-size:56px; font-weight:bold; margin:28px 0 0; }
+  footer{ position:fixed; bottom:20px; left:0; right:0; text-align:center; }
+  footer img{ width:70px; filter:invert(1); opacity:.7; }
+  h1{ font-size:56px; font-weight:bold; margin:0; }
   .def{ margin:14px 0 0; }
   /* urban-dictionary example: italic, left-barred, left-aligned inside the centred column */
   blockquote{ display:inline-block; text-align:left; font-style:italic;
@@ -22,8 +23,6 @@
 </head>
 <body>
 <div class="mid">
-
-  <img src="/lk-logo.png" alt="LOHO KUR">
 
   <h1>cracked*</h1>
 
@@ -43,6 +42,8 @@
   <p class="note" id="note"></p>
 
 </div>
+
+<footer><a href="/"><img src="/lk-logo.png" alt="LOHO KUR"></a></footer>
 
 <script>
   const f = document.getElementById('f');
