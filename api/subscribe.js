@@ -8,6 +8,33 @@ import { neon } from '@neondatabase/serverless';
 
 const SOURCES = new Set(['lohokur.com', 'join', 'footer', 'studio']);
 
+const SEND_FROM = 'LOHO KUR <hello@lohokur.com>';
+const REPLY_TO = 'loho@lohokur.com';
+
+// Plain text on white — the same voice as the page, nothing dressed up.
+function welcome() {
+  return {
+    subject: "you're in.",
+    text: [
+      'you signed up at lohokur.com.',
+      '',
+      'cracked* — insanely good at something. homemade software, non-corporate, dope.',
+      '',
+      "that's what lands here: the things I build, before anyone else sees them.",
+      'no noise, and you can leave whenever you like.',
+      '',
+      '— loho',
+    ].join('\n'),
+    html:
+      `<div style="background:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#000">
+         <p style="margin:0 0 14px">you signed up at lohokur.com.</p>
+         <p style="margin:0 0 14px">cracked* &mdash; insanely good at something. homemade software, non-corporate, dope.</p>
+         <p style="margin:0 0 14px">that&rsquo;s what lands here: the things I build, before anyone else sees them.<br>no noise, and you can leave whenever you like.</p>
+         <p style="margin:0">&mdash; loho</p>
+       </div>`,
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -46,7 +73,26 @@ export default async function handler(req, res) {
       on conflict (lower(email)) do update
         set unsubscribed_at = null
       returning (xmax = 0) as inserted`;
-    return res.status(200).json({ ok: true, new: rows[0]?.inserted === true });
+
+    const isNew = rows[0]?.inserted === true;
+
+    // Only first-time signups get the welcome, and a failed send never costs
+    // the signup — the address is already saved by this point.
+    if (isNew && process.env.RESEND_API_KEY) {
+      const note = welcome();
+      try {
+        const r = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: SEND_FROM, to: [email], reply_to: REPLY_TO, subject: note.subject, text: note.text, html: note.html }),
+        });
+        if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`);
+      } catch (err) {
+        console.error('welcome email failed for', email, err);
+      }
+    }
+
+    return res.status(200).json({ ok: true, new: isNew });
   } catch (err) {
     console.error('subscribe failed', err);
     return res.status(502).json({ error: 'store', message: 'We could not save that. Try again, or email loho@lohokur.com.' });
