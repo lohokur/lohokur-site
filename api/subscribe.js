@@ -10,7 +10,7 @@ const SOURCES = new Set(['lohokur.com', 'join', 'footer', 'studio']);
 
 // Quoted because of the asterisk — an unquoted display name with punctuation
 // is not a valid address header.
-const SEND_FROM = '"CRACKED*" <hello@lohokur.com>';
+const SEND_FROM = '"LOHO KUR CRACKED*" <hello@lohokur.com>';
 const REPLY_TO = 'loho@lohokur.com';
 
 // Text only — no HTML wrapper, so no mail client paints a box behind it and
