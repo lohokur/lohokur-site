@@ -216,15 +216,13 @@
       // a face: neither dark nor blown out, and textured rather than a flat wall
       var ok = mean > 55 && mean < 205 && vari > 350;
       read.textContent = 'light ' + Math.round(mean) + ' · texture ' + Math.round(Math.sqrt(vari)) + (ok ? ' · lock' : ' · searching');
+      // Lock is only a readout. Nothing is captured until they press scan.
       if (ok) {
-        if (!lockSince) lockSince = now;
         scan.classList.add('lock');
-        var left = Math.ceil((2200 - (now - lockSince)) / 1000);
-        hint.textContent = 'hold still. scanning in ' + Math.max(0, left);
-        if (now - lockSince > 2200) { capture(); return; }
+        hint.textContent = 'locked. press scan.';
       } else {
-        lockSince = 0; scan.classList.remove('lock');
-        hint.textContent = 'put your face in the frame. hold still.';
+        scan.classList.remove('lock');
+        hint.textContent = 'put your face in the frame.';
       }
     }
     raf = requestAnimationFrame(tick);
@@ -285,8 +283,16 @@
     acc = 0;
     for (; hi > 0 && acc + hist[hi] < cut; hi--) acc += hist[hi];
     var range = Math.max(1, hi - lo);
+    // Old mugshot look: hard S-curve, tones posterised to a few flat steps, film grain, a dark vignette.
+    var LEVELS = 8, cx = W / 2, cy = H / 2, rmax = Math.sqrt(cx * cx + cy * cy), px_, py_, dist;
     for (i = 0; i < px; i++) {
-      v = (lum[i] - lo) * 255 / range;
+      v = (lum[i] - lo) / range;                       // 0..1
+      v = v < 0 ? 0 : v > 1 ? 1 : v;
+      v = 0.6 * v * v * (3 - 2 * v) + 0.4 * v;         // S-curve, eased: deep shadows, hot highlights, mids kept
+      v = Math.round(v * (LEVELS - 1)) / (LEVELS - 1); // posterise
+      px_ = (i % W) - cx; py_ = (i / W | 0) - cy; dist = Math.sqrt(px_ * px_ + py_ * py_) / rmax;
+      v = v * (1 - 0.4 * dist * dist);                 // vignette
+      v = v * 255 + (Math.random() - 0.5) * 28;        // grain
       p[i * 4] = p[i * 4 + 1] = p[i * 4 + 2] = v; p[i * 4 + 3] = 255;
     }
     x.putImageData(d, 0, 0);

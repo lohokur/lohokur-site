@@ -31,7 +31,7 @@ Reject (face=false) if: no face; more than one person; the face is small, cut of
 
 Reject (safe=false) if there is any nudity, underwear or swimwear, sexual content or suggestive pose, gore, blood, injury, violence, weapons, drugs, drug use, hate symbols, offensive gestures, or anything graphic, disturbing or degrading anywhere in the frame.
 
-Expected and NOT a reason to reject: grayscale, stretched contrast, grain, blur, low quality, webcam or phone-camera look, a scanned or photographed ID photo or printed portrait, security microprint over the face.`;
+Expected and NOT a reason to reject: grayscale, hard contrast, posterised flat tones, film grain, a dark vignette, blur, low quality, webcam or phone-camera look, a scanned or photographed ID photo or printed portrait, security microprint over the face. The wall deliberately styles photos like old mugshots; that treatment is applied to real photographs and does not make them drawings or renders.`;
 
 const CANT = { ok: false, message: 'Could not check the photo. Try again.' };
 
