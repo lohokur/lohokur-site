@@ -33,8 +33,11 @@
   #deck{width:100%;max-width:520px;table-layout:fixed}
   #display{background:#000;color:#ccc;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px 10px;white-space:pre;overflow:hidden}
   #display b{font-weight:normal;color:#fff}
-  #controls button{font:inherit;padding:2px 8px;margin-right:4px}
-  #controls input[type=range]{width:90px;vertical-align:middle}
+  #controls{background:#000;color:#ccc;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:4px 6px 8px;border-top:0}
+  #controls button{font:inherit;background:none;border:0;color:#fff;padding:4px 4px;cursor:pointer}
+  #controls button:active{color:#888}
+  #controls .v{white-space:nowrap}
+  #controls .v b{font-weight:normal;color:#fff}
   #tracks{width:100%;font-size:13px;border-collapse:collapse}
   #tracks tr{opacity:0;cursor:pointer}
   #tracks tr.in{opacity:1}
@@ -138,7 +141,7 @@
 <b>Music</b> (<span id="trackcount">0</span>)
 <table id="deck" border="1" cellspacing="0" cellpadding="0">
 <tr><td id="display">loading playlist<span class="cur"></span></td></tr>
-<tr><td id="controls" style="padding:6px"><button type="button" id="prev" title="previous">|&lt;</button><button type="button" id="play" title="play">&gt;</button><button type="button" id="pause" title="pause">||</button><button type="button" id="stop" title="stop">&#9632;</button><button type="button" id="next" title="next">&gt;|</button> <small>vol</small> <input type="range" id="vol" min="0" max="100" value="80"></td></tr>
+<tr><td id="controls"><button type="button" id="prev">[ prev ]</button><button type="button" id="play">[ play ]</button><button type="button" id="pause">[ pause ]</button><button type="button" id="stop">[ stop ]</button><button type="button" id="next">[ next ]</button><span class="v"><button type="button" id="vdn">[ - ]</button>vol <b id="vlv">80</b><button type="button" id="vup">[ + ]</button></span></td></tr>
 <tr><td style="padding:0"><table id="tracks"><tbody id="tracklist"></tbody></table></td></tr>
 </table>
 <audio id="audio" preload="none"></audio>
@@ -508,8 +511,11 @@
   document.getElementById('stop').addEventListener('click', function () { audio.pause(); audio.currentTime = 0; paint(); });
   document.getElementById('next').addEventListener('click', function () { load(cur + 1, !audio.paused || cur < 0); });
   document.getElementById('prev').addEventListener('click', function () { load(cur - 1, !audio.paused || cur < 0); });
-  document.getElementById('vol').addEventListener('input', function (e) { audio.volume = e.target.value / 100; });
-  audio.volume = 0.8;
+  var vol = 80, vlv = document.getElementById('vlv');
+  function setVol(v) { vol = Math.max(0, Math.min(100, v)); audio.volume = vol / 100; vlv.textContent = vol; }
+  document.getElementById('vdn').addEventListener('click', function () { setVol(vol - 10); });
+  document.getElementById('vup').addEventListener('click', function () { setVol(vol + 10); });
+  setVol(80);
   audio.addEventListener('timeupdate', paint); audio.addEventListener('play', paint); audio.addEventListener('pause', paint);
   audio.addEventListener('loadedmetadata', paint);
   audio.addEventListener('ended', function () { if (cur + 1 < tracks.length) load(cur + 1, true); else { audio.currentTime = 0; paint(); } });
