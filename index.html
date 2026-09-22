@@ -270,8 +270,8 @@
     var i = 0;
     (function step() {
       status = '$ ' + cmd.slice(0, i); render(true);
-      if (i < cmd.length) { i++; later(35 + Math.random() * 55, step); }
-      else later(180, function () { status = ''; logln('$ ' + cmd, true); cb(); });
+      if (i < cmd.length) { i++; later(12 + Math.random() * 22, step); }
+      else later(90, function () { status = ''; logln('$ ' + cmd, true); cb(); });
     })();
   }
 
@@ -279,18 +279,18 @@
     scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
     busy = false; lastLock = null; pendLock = null; lines = []; status = ''; frames = 0; stopTimers();
     t0 = performance.now(); render(true);
-    later(250, function () {
+    later(120, function () {
       typeCmd('./scan --device /dev/video0 --roi 3:4', function () {
         logln('open /dev/video0');
         if (!canStream) {
           var host = (navigator.userAgent.match(/Instagram|FBAN|FBAV|TikTok|Snapchat|Twitter|Line/i) || ['host'])[0].toLowerCase();
-          later(60, function () { logln(inApp ? 'v4l2: EACCES (in-app browser: ' + host + ')' : 'v4l2: ENODEV (no live camera)'); });
-          later(140, function () { logln('fallback: system camera'); });
-          later(200, function () { logln('press [ scan ]'); });
+          later(40, function () { logln(inApp ? 'v4l2: EACCES (in-app browser: ' + host + ')' : 'v4l2: ENODEV (no live camera)'); });
+          later(90, function () { logln('fallback: system camera'); });
+          later(130, function () { logln('press [ scan ]'); });
           return;
         }
-        later(50, function () { logln('alloc 4 buffers'); });
-        later(110, function () {
+        later(30, function () { logln('alloc 4 buffers'); });
+        later(60, function () {
           logln('requesting device');
           navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
             .then(function (s) { stream = s; cam.srcObject = s; return cam.play(); })
@@ -298,8 +298,8 @@
               var tr = stream.getVideoTracks()[0], st = tr.getSettings ? tr.getSettings() : {};
               logln('stream on ' + (st.width || cam.videoWidth) + 'x' + (st.height || cam.videoHeight) + (st.frameRate ? ' ' + Math.round(st.frameRate) + 'fps' : '') + (tr.label ? ' (' + tr.label.toLowerCase() + ')' : ''));
               scan.classList.add('live');
-              later(120, function () { logln('roi 3:4 centre -> 590x770'); scan.classList.add('roi'); });
-              later(220, function () { logln('waiting for subject'); raf = requestAnimationFrame(tick); });
+              later(60, function () { logln('roi 3:4 centre -> 590x770'); scan.classList.add('roi'); });
+              later(120, function () { logln('waiting for subject'); raf = requestAnimationFrame(tick); });
             })
             .catch(function (e) {
               logln('v4l2: ' + (e && e.name === 'NotAllowedError' ? 'EACCES (permission denied)' : 'ENODEV (' + ((e && e.name) || 'no camera').toLowerCase() + ')'));
