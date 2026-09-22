@@ -121,7 +121,7 @@
     <b>Blackglass</b> <small id="bg-ver">v0.1.1</small><br>
     <small>free alternative to photoshop</small><br>
     <form id="bg-dl" method="get" action="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.1/Blackglass-0.1.1-arm64.dmg"><input type="submit" value="DOWNLOAD"></form>
-    <small>mac (apple silicon) &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.1/Blackglass-0.1.1-x64.dmg">intel mac</a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small>
+    <small>mac (apple silicon) &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.1/Blackglass-0.1.1-x64.dmg">intel mac</a> &middot; <a id="bg-win" href="https://cracked-portal.vercel.app/">windows</a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small>
   </td>
 </tr>
 </table>
@@ -187,7 +187,9 @@
   fetch('https://cracked-portal.vercel.app/api/apps').then(function (r) { return r.json(); }).then(function (j) {
     var app = (j.apps || []).filter(function (a) { return a.slug === 'blackglass'; })[0];
     var rels = (app && app.releases) || [];
-    var rel = rels.filter(function (r) { return r.live; })[0] || rels[0];
+    var macs = rels.filter(function (r) { return (r.platform || 'mac') === 'mac'; }), wins = rels.filter(function (r) { return r.platform === 'win'; });
+    var rel = macs.filter(function (r) { return r.live; })[0] || macs[0];
+    var win = wins.filter(function (r) { return r.live; })[0]; if (win && win.assets && win.assets.exe_x64) document.getElementById('bg-win').href = win.assets.exe_x64;
     var el = document.getElementById('bg-left');
     if (!rel || !el) return;
     if (rel.soldOut) el.textContent = 'sold out';
