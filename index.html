@@ -436,7 +436,7 @@
       if (it[1]) { var img = new Image(); img.src = '/identities/' + it[0] + '.jpg'; img.width = 118; img.height = 154; img.alt = it[0]; img.loading = 'lazy'; a.appendChild(img); }
       else { var box = document.createElement('div'); box.className = 'arch'; box.textContent = 'unclassified'; a.appendChild(box); }
       fig.appendChild(a);
-      var cap = document.createElement('figcaption'); cap.textContent = it[0] + (it[1] ? ' · ' + it[1] : ''); fig.appendChild(cap);
+      var cap = document.createElement('figcaption'); cap.textContent = it[0]; fig.appendChild(cap);
       idwall.appendChild(fig);
     });
   }
