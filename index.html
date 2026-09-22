@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LOHO KUR</title>
+<title>LOHO KUR - Downloads</title>
 <meta name="description" content="LOHO KUR. Limited software releases.">
-<meta property="og:title" content="LOHO KUR">
+<meta property="og:title" content="LOHO KUR - Downloads">
 <meta property="og:image" content="https://lohokur.com/mugshot.jpg">
 <meta property="og:url" content="https://lohokur.com">
 <meta name="theme-color" content="#ffffff">
@@ -18,16 +18,123 @@
 </script>
 <style>
   body{background:#fff;color:#000}
-  img{max-width:100%;height:auto}
+  img{max-width:100%;height:auto;vertical-align:top}
+  #wall img{width:118px;height:154px;margin:0 4px 4px 0}
+  td{vertical-align:top}
 </style>
 </head>
 <body>
 
-<img src="/mugshot.jpg" width="295" height="385" alt="">
+<b>LOHO KUR</b> &middot; Downloads<br>
+<small><a href="/">Home</a> | <a href="/canvas">Canvas</a> | <a href="/identities">Identities</a> | <a href="/join">Mailing list</a> | <a href="mailto:studio@lohokur.com">Contact</a></small>
+<hr>
 
-<form action="/join"><button>download</button></form>
+<table border="1" cellspacing="0" cellpadding="6">
+<tr>
+  <td rowspan="7"><img src="/mugshot.jpg" width="177" height="231" alt=""></td>
+  <th align="left">File</th><td>LOHO KUR</td>
+</tr>
+<tr><th align="left">Category</th><td>Software / Homemade</td></tr>
+<tr><th align="left">Author</th><td>loho kur</td></tr>
+<tr><th align="left">License</th><td>Free</td></tr>
+<tr><th align="left">Release</th><td>Sunday</td></tr>
+<tr><th align="left">Description</th><td>cracked* &mdash; insanely good at something. homemade, anti-corporate, dope.</td></tr>
+<tr><td colspan="2"><form action="/join"><input type="submit" value="DOWNLOAD NOW"> <small>mirror: <a href="/join">mailing list</a></small></form></td></tr>
+</table>
 
-<p><a href="/canvas">canvas</a></p>
+<hr>
+
+<b>Mugshots</b> (<span id="count">0</span>) <button type="button" id="plus" title="add your mugshot">+</button> <small>add yours</small>
+<input type="file" id="file" accept="image/*" hidden>
+<p id="msg" hidden></p>
+<div id="wall"></div>
+
+<hr>
+<small>&copy; 2026 LOHO KUR &middot; <a href="/canvas">enter the canvas</a></small>
+
+<script>
+(function () {
+  var W = 590, H = 770;
+  var plus = document.getElementById('plus');
+  var file = document.getElementById('file');
+  var wall = document.getElementById('wall');
+  var msg = document.getElementById('msg');
+  var count = document.getElementById('count');
+  var n = 0;
+
+  function say(t) { msg.textContent = t; msg.hidden = !t; }
+
+  function add(src, first) {
+    var img = new Image();
+    img.src = src; img.width = 118; img.height = 154; img.alt = '';
+    img.loading = 'lazy';
+    if (first && wall.firstChild) wall.insertBefore(img, wall.firstChild);
+    else wall.appendChild(img);
+    count.textContent = ++n;
+  }
+
+  fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
+    (j.ids || []).forEach(function (id) { add('/api/mugshot?id=' + id); });
+  }).catch(function () {});
+
+  plus.addEventListener('click', function () { file.click(); });
+
+  file.addEventListener('change', function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    say('uploading...');
+    var url = URL.createObjectURL(f);
+    var im = new Image();
+    im.onload = function () {
+      URL.revokeObjectURL(url);
+      try { upload(mugshot(im)); } catch (e) { say('could not read that image'); }
+    };
+    im.onerror = function () { say('could not read that image'); };
+    im.src = url;
+  });
+
+  // Centre-crop to 3:4, grayscale, stretch the contrast, small JPEG.
+  function mugshot(im) {
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var x = c.getContext('2d');
+    var sw = im.naturalWidth, sh = im.naturalHeight;
+    var s = Math.max(W / sw, H / sh);
+    var dw = sw * s, dh = sh * s;
+    x.drawImage(im, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    var d = x.getImageData(0, 0, W, H), p = d.data, px = p.length / 4;
+    var hist = new Uint32Array(256), lum = new Uint8ClampedArray(px), i, v;
+    for (i = 0; i < px; i++) {
+      v = (p[i * 4] * 299 + p[i * 4 + 1] * 587 + p[i * 4 + 2] * 114) / 1000 | 0;
+      lum[i] = v; hist[v]++;
+    }
+    var lo = 0, hi = 255, acc = 0, cut = px * 0.01;
+    for (; lo < 255 && acc + hist[lo] < cut; lo++) acc += hist[lo];
+    acc = 0;
+    for (; hi > 0 && acc + hist[hi] < cut; hi--) acc += hist[hi];
+    var range = Math.max(1, hi - lo);
+    for (i = 0; i < px; i++) {
+      v = (lum[i] - lo) * 255 / range;
+      p[i * 4] = p[i * 4 + 1] = p[i * 4 + 2] = v; p[i * 4 + 3] = 255;
+    }
+    x.putImageData(d, 0, 0);
+    return c.toDataURL('image/jpeg', 0.82);
+  }
+
+  function upload(dataUrl) {
+    fetch('/api/mugshots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: dataUrl })
+    }).then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
+      .then(function (ok) {
+        if (ok[0]) { add(dataUrl, true); say(''); }
+        else say(ok[1].message || 'not added');
+      })
+      .catch(function () { say('not added'); })
+      .finally(function () { file.value = ''; });
+  }
+})();
+</script>
 
 </body>
 </html>
