@@ -1,3 +1,14 @@
 [
-  { "file": "/music/01-my-final-song.m4a", "title": "my final song", "artist": "loho kur", "duration": 162 }
+  {
+    "file": "/music/01-my-final-song.m4a",
+    "title": "my final song",
+    "artist": "loho kur",
+    "duration": 162
+  },
+  {
+    "file": "/music/02-linkedin.m4a",
+    "title": "linkedin",
+    "artist": "loho kur",
+    "duration": 68
+  }
 ]
