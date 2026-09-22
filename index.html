@@ -29,9 +29,10 @@
   @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} th{width:86px} }
 
   /* the scanner: full-screen camera, a clear 3:4 cutout, dim surround, corner brackets */
-  #scan{position:fixed;inset:0;z-index:100;background:#000;color:#fff;display:none;
+  #scan{position:fixed;inset:0;z-index:100;background:#000;color:#fff;opacity:0;visibility:hidden;
+    transition:opacity .4s ease,visibility 0s linear .4s;
     font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-  #scan.on{display:block}
+  #scan.on{opacity:1;visibility:visible;transition:opacity .4s ease}
   #scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
   #scan .cut{position:absolute;left:50%;top:50%;width:min(66vw,300px);aspect-ratio:3/4;transform:translate(-50%,-50%);
     box-shadow:0 0 0 200vmax rgba(0,0,0,.6);transition:box-shadow .4s}
@@ -98,6 +99,7 @@
 
 <b>Mugshots</b> (<span id="count">0</span>) <button type="button" id="plus" title="add your mugshot">+</button> <small>add yours</small>
 <input type="file" id="file" accept="image/*" hidden>
+<input type="file" id="snap" accept="image/*" capture="user" hidden>
 <p id="msg" hidden></p>
 <div id="wall"></div>
 
@@ -173,17 +175,45 @@
   if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
   document.getElementById('close').addEventListener('click', closeScanner);
   document.getElementById('upload').addEventListener('click', function () { closeScanner(); file.click(); });
-  shoot.addEventListener('click', function () { if (stream) capture(); });
+  // Live feed when the browser allows it. In-app browsers (Instagram, Facebook, TikTok,
+  // Snapchat, X, LINE) block live camera access, so there SCAN opens the phone's own
+  // camera through a file input instead. Same overlay, same treatment, same wall.
+  var snap = document.getElementById('snap');
+  var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|musical_ly|Snapchat|Twitter|Line\//i.test(navigator.userAgent);
+  var canStream = !inApp && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+  shoot.addEventListener('click', function () { if (stream) capture(); else if (!busy) snap.click(); });
+  snap.addEventListener('change', function () {
+    var f = snap.files && snap.files[0];
+    if (!f) return;
+    busy = true;
+    read.textContent = 'developing'; hint.textContent = '';
+    var url = URL.createObjectURL(f), im = new Image();
+    im.onload = function () {
+      URL.revokeObjectURL(url);
+      try { finish(mugshot(im)); } catch (e) { busy = false; read.textContent = 'camera'; hint.textContent = 'could not read that. press scan to try again.'; }
+      snap.value = '';
+    };
+    im.onerror = function () { busy = false; read.textContent = 'camera'; hint.textContent = 'could not read that. press scan to try again.'; snap.value = ''; };
+    im.src = url;
+  });
 
   function openScanner() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { file.click(); return; }
     scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
-    read.textContent = 'starting camera'; hint.textContent = 'put your face in the frame. hold still.';
     busy = false; lockSince = 0;
+    if (!canStream) { native(); return; }
+    read.textContent = 'starting camera'; hint.textContent = 'put your face in the frame.';
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
       .then(function (s) { stream = s; cam.srcObject = s; return cam.play(); })
       .then(function () { raf = requestAnimationFrame(tick); })
-      .catch(function () { read.textContent = 'no camera'; hint.textContent = 'camera blocked. upload a photo instead.'; });
+      .catch(native);
+  }
+
+  // No live feed: the overlay stays, and SCAN hands off to the device camera.
+  function native() {
+    stream = null;
+    read.textContent = 'camera ready';
+    hint.textContent = 'press scan to open your camera.';
   }
 
   function closeScanner() {
@@ -233,11 +263,17 @@
     busy = true; cancelAnimationFrame(raf);
     var r = cutRect();
     var dataUrl = mugshot(cam, r);
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    finish(dataUrl);
+  }
+
+  // Show the developed mugshot, file it, then close.
+  function finish(dataUrl) {
+    busy = true;
     document.getElementById('doneimg').src = dataUrl;
     document.getElementById('donetext').textContent = 'subject logged';
     document.getElementById('donesub').textContent = 'filing...';
     scan.classList.add('finished');
-    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
     upload(dataUrl, function (ok, message) {
       document.getElementById('donetext').textContent = ok ? 'subject logged' : 'not logged';
       document.getElementById('donesub').textContent = ok ? "you're in the system. welcome to the group." : (message || 'try again');
