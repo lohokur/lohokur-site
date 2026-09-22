@@ -33,12 +33,17 @@
   #deck{width:100%;max-width:520px;table-layout:fixed}
   #display{background:#000;color:#ccc;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px 10px;white-space:pre;overflow:hidden}
   #display b{font-weight:normal;color:#fff}
-  #controls{background:#000;color:#ccc;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:4px 6px 8px;border-top:0}
-  #controls button{font:inherit;background:none;border:0;color:#fff;padding:4px 4px;cursor:pointer}
-  #controls button:active{color:#888}
-  #controls .v{white-space:nowrap;display:inline-block}
-  @media (max-width:600px){ #controls .v{display:block;margin-top:2px} #controls button{padding:4px 2px} }
-  #controls .v b{font-weight:normal;color:#fff}
+  #controls{background:#000;color:#ccc;font:12px/1 ui-monospace,Menlo,Consolas,monospace;padding:6px 8px 8px;border-top:0;white-space:nowrap}
+  #controls button{width:30px;height:24px;padding:0;margin:0 4px 0 0;background:#000;border:1px solid #666;color:#fff;cursor:pointer;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center}
+  #controls button svg{fill:#fff;display:block}
+  #controls button:active{background:#fff;border-color:#fff}
+  #controls button:active svg{fill:#000}
+  #controls button:active svg path{stroke:#000}
+  #controls .v{display:inline-block;margin-left:8px;vertical-align:middle}
+  #controls .v>svg{fill:#fff;vertical-align:middle;margin-right:6px}
+  #controls .v b{font-weight:normal;color:#fff;display:inline-block;width:2.4em;text-align:center;vertical-align:middle}
+  #controls .v button{margin:0}
+  @media (max-width:600px){ #controls .v{display:block;margin:8px 0 0} }
   #tracks{width:100%;font-size:13px;border-collapse:collapse}
   #tracks tr{opacity:0;cursor:pointer}
   #tracks tr.in{opacity:1}
@@ -142,7 +147,7 @@
 <b>Music</b> (<span id="trackcount">0</span>)
 <table id="deck" border="1" cellspacing="0" cellpadding="0">
 <tr><td id="display">loading playlist<span class="cur"></span></td></tr>
-<tr><td id="controls"><button type="button" id="prev">[ prev ]</button><button type="button" id="play">[ play ]</button><button type="button" id="pause">[ pause ]</button><button type="button" id="stop">[ stop ]</button><button type="button" id="next">[ next ]</button><span class="v"><button type="button" id="vdn">[ - ]</button>vol <b id="vlv">80</b><button type="button" id="vup">[ + ]</button></span></td></tr>
+<tr><td id="controls"><button type="button" id="prev" title="previous"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="2" height="10"/><polygon points="13,3 6,8 13,13"/></svg></button><button type="button" id="play" title="play"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><polygon points="4,2 14,8 4,14"/></svg></button><button type="button" id="pause" title="pause"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="3" width="3" height="10"/><rect x="9" y="3" width="3" height="10"/></svg></button><button type="button" id="stop" title="stop"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="8" height="8"/></svg></button><button type="button" id="next" title="next"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><polygon points="3,3 10,8 3,13"/><rect x="11" y="3" width="2" height="10"/></svg></button><span class="v"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><polygon points="2,6 5,6 9,3 9,13 5,10 2,10"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="#fff" stroke-width="1.4"/></svg><button type="button" id="vdn" title="quieter"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="3" y="7" width="10" height="2"/></svg></button><b id="vlv">80</b><button type="button" id="vup" title="louder"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="3" y="7" width="10" height="2"/><rect x="7" y="3" width="2" height="10"/></svg></button></span></td></tr>
 <tr><td style="padding:0"><table id="tracks"><tbody id="tracklist"></tbody></table></td></tr>
 </table>
 <audio id="audio" preload="none"></audio>
