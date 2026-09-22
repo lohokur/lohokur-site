@@ -6,8 +6,11 @@ import crypto from 'node:crypto';
    skipped: the cookie is an HMAC signed with GATE_SECRET, which a visitor who
    merely knows the password has no way to forge. */
 
-// SHA-256 of the shared password, lowercased and trimmed.
-const DIGEST   = '584cab77390ab5a63a48ace505dedd145dfc5f964ff19a65b5d096a432214523';
+// SHA-256 of each accepted password, lowercased and trimmed. Any one of them opens the gate.
+const DIGESTS  = [
+  '584cab77390ab5a63a48ace505dedd145dfc5f964ff19a65b5d096a432214523', // the long one
+  'cbd3cfb9b9f51bbbfbf08759e243f5b3519cbf6ecc219ee95fe7c667e32c0a8d'  // the short one
+];
 const TERMS    = 'v1.3-2026-08-31';
 const COOKIE   = 'lk_pf';
 const MAX_AGE  = 60 * 60 * 24 * 30; // 30 days
@@ -50,8 +53,8 @@ export default async function handler(req, res) {
   if (!agreed) return res.status(400).json({ error: 'agree' });
 
   const given = crypto.createHash('sha256').update(password).digest('hex');
-  if (given.length !== DIGEST.length ||
-      !crypto.timingSafeEqual(Buffer.from(given), Buffer.from(DIGEST))) {
+  const match = DIGESTS.some((d) => given.length === d.length && crypto.timingSafeEqual(Buffer.from(given), Buffer.from(d)));
+  if (!match) {
     return res.status(401).json({ error: 'password' });
   }
 
