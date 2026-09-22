@@ -162,7 +162,7 @@
   var doneimg = document.getElementById('doneimg');
   var shoot = document.getElementById('shoot');
   var snap = document.getElementById('snap');
-  var stream = null, raf = 0, busy = false, t0 = 0, lines = [], status = '', timers = [], lastLock = null, frames = 0;
+  var stream = null, raf = 0, busy = false, t0 = 0, lines = [], status = '', timers = [], lastLock = null, pendLock = null, pendSince = 0, frames = 0;
   var probe = document.createElement('canvas'); probe.width = 48; probe.height = 64;
   var pctx = probe.getContext('2d', { willReadFrequently: true });
   var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|musical_ly|Snapchat|Twitter|Line\//i.test(navigator.userAgent);
@@ -193,7 +193,7 @@
 
   function openScanner() {
     scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
-    busy = false; lastLock = null; lines = []; status = ''; frames = 0; stopTimers();
+    busy = false; lastLock = null; pendLock = null; lines = []; status = ''; frames = 0; stopTimers();
     t0 = performance.now(); render(true);
     later(250, function () {
       typeCmd('./scan --device /dev/video0 --roi 3:4', function () {
@@ -258,7 +258,9 @@
       var ok = mean > 55 && mean < 205 && vari > 350;
       scan.classList.toggle('lock', ok);                       // readout only; nothing is captured until [ scan ]
       if ((frames++ & 3) === 0) live('lum ' + Math.round(mean) + '  var ' + Math.round(Math.sqrt(vari)) + '  lock ' + (ok ? 1 : 0));
-      if (ok !== lastLock) { lastLock = ok; logln(ok ? 'subject in frame. [ scan ] when ready' : 'no subject'); }
+      // Log a change of state only once it has held for 600ms, so a borderline face does not flood the log.
+      if (ok !== pendLock) { pendLock = ok; pendSince = performance.now(); }
+      if (ok !== lastLock && performance.now() - pendSince > 600) { lastLock = ok; logln(ok ? 'subject in frame. [ scan ] when ready' : 'no subject'); }
     }
     raf = requestAnimationFrame(tick);
   }
