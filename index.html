@@ -29,20 +29,62 @@
   @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} th{width:86px} }
 
   /* the scanner: full-screen camera, a clear 3:4 cutout, dim surround, corner brackets */
-  #scan{position:fixed;inset:0;z-index:100;background:#000;color:#fff;opacity:0;visibility:hidden;
-    transition:opacity .4s ease,visibility 0s linear .4s;
+  /* Opening is a morph, not a fade: lines sweep across the page, the four corners fly in
+     from the page's corners and lock into a frame, the surround darkens, the readouts
+     drop in, and the camera fades up underneath. Classes: .on starts it, .set (added by
+     JS ~0.8s later) commits the dark surround and the feed. */
+  #scan{position:fixed;inset:0;z-index:100;background:transparent;color:#fff;visibility:hidden;pointer-events:none;
     font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-  #scan.on{opacity:1;visibility:visible;transition:opacity .4s ease}
-  #scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  #scan.on{visibility:visible;pointer-events:auto}
+  #scan.set{background:#000;transition:background .5s}
+  #scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:0}
+  #scan.set video{opacity:1;transition:opacity .8s .2s}
   #scan .cut{position:absolute;left:50%;top:50%;width:min(66vw,300px);aspect-ratio:3/4;transform:translate(-50%,-50%);
-    box-shadow:0 0 0 200vmax rgba(0,0,0,.6);transition:box-shadow .4s}
-  #scan.lock .cut{box-shadow:0 0 0 200vmax rgba(0,40,20,.6)}
-  #scan .br{position:absolute;width:34px;height:34px;border:3px solid #fff;transition:border-color .3s}
+    box-shadow:0 0 0 200vmax rgba(0,0,0,0);transition:box-shadow .5s}
+  #scan.set .cut{box-shadow:0 0 0 200vmax rgba(0,0,0,.6)}
+  #scan.set.lock .cut{box-shadow:0 0 0 200vmax rgba(0,40,20,.6)}
+  #scan .br{position:absolute;width:34px;height:34px;border:3px solid #000;transition:border-color .4s;opacity:0}
+  #scan.set .br{border-color:#fff}
+  #scan.on .br{animation:.9s cubic-bezier(.2,.9,.25,1) both}
+  #scan.on .br.tl{animation-name:in-tl;animation-delay:.25s}
+  #scan.on .br.tr{animation-name:in-tr;animation-delay:.35s}
+  #scan.on .br.bl{animation-name:in-bl;animation-delay:.45s}
+  #scan.on .br.brr{animation-name:in-br;animation-delay:.55s}
+  @keyframes in-tl{from{transform:translate(-48vw,-48vh) rotate(-90deg);opacity:0}to{transform:none;opacity:1}}
+  @keyframes in-tr{from{transform:translate(48vw,-48vh) rotate(90deg);opacity:0}to{transform:none;opacity:1}}
+  @keyframes in-bl{from{transform:translate(-48vw,48vh) rotate(90deg);opacity:0}to{transform:none;opacity:1}}
+  @keyframes in-br{from{transform:translate(48vw,48vh) rotate(-90deg);opacity:0}to{transform:none;opacity:1}}
+  /* the sweep lines: black over the white page; they have finished before the surround goes dark */
+  #scan .lines{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  #scan .lines i{position:absolute;background:#000;opacity:0}
+  #scan .lines i.h{left:0;right:0;height:2px}
+  #scan .lines i.v{top:0;bottom:0;width:2px}
+  #scan.on .lines i.h{animation:sweep-h 1s cubic-bezier(.3,.7,.3,1) both}
+  #scan.on .lines i.v{animation:sweep-v 1s cubic-bezier(.3,.7,.3,1) both}
+  @keyframes sweep-h{0%{top:-2px;opacity:0}12%{opacity:1}100%{top:100%;opacity:0}}
+  @keyframes sweep-v{0%{left:-2px;opacity:0}12%{opacity:1}100%{left:100%;opacity:0}}
+  #scan .lines i:nth-child(1){animation-delay:0s}
+  #scan .lines i:nth-child(2){animation-delay:.08s}
+  #scan .lines i:nth-child(3){animation-delay:.16s}
+  #scan .lines i:nth-child(4){animation-delay:.24s}
+  #scan .lines i:nth-child(5){animation-delay:.05s}
+  #scan .lines i:nth-child(6){animation-delay:.14s}
+  #scan .lines i:nth-child(7){animation-delay:.22s}
+  #scan .lines i:nth-child(8){animation-delay:.3s}
+  #scan .top,#scan .bot{opacity:0}
+  #scan.on .top{animation:drop-in .5s .8s ease-out both}
+  #scan.on .bot{animation:rise-in .5s .9s ease-out both}
+  @keyframes drop-in{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+  @keyframes rise-in{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){
+    #scan.on *{animation:none!important;opacity:1}
+    #scan.on{background:#000}
+  }
   #scan .br.tl{left:-3px;top:-3px;border-right:0;border-bottom:0}
   #scan .br.tr{right:-3px;top:-3px;border-left:0;border-bottom:0}
   #scan .br.bl{left:-3px;bottom:-3px;border-right:0;border-top:0}
   #scan .br.brr{right:-3px;bottom:-3px;border-left:0;border-top:0}
-  #scan.lock .br{border-color:#4f8}
+  #scan.lock .br,#scan.set.lock .br{border-color:#4f8}
   #scan .sweep{position:absolute;left:0;right:0;top:0;height:2px;background:#4f8;box-shadow:0 0 12px #4f8;opacity:0}
   #scan.lock .sweep{opacity:1;animation:sweep 1.6s linear infinite}
   @keyframes sweep{from{top:0}to{top:100%}}
@@ -105,6 +147,7 @@
 
 <div id="scan" aria-hidden="true">
   <video id="cam" autoplay playsinline muted></video>
+  <div class="lines"><i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i><i class="v"></i><i class="v"></i><i class="v"></i><i class="v"></i></div>
   <div class="cut"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br brr"></span><span class="sweep"></span></div>
   <div class="top">scanning subject<br><span class="read" id="read">starting camera</span></div>
   <div class="bot"><span id="hint">put your face in the frame. hold still.</span><br><button type="button" id="shoot">scan</button><button type="button" class="ghost" id="upload">upload instead</button></div>
@@ -199,9 +242,12 @@
     im.src = url;
   });
 
+  var setTimer = 0;
   function openScanner() {
     scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
     busy = false; lockSince = 0;
+    clearTimeout(setTimer);
+    setTimer = setTimeout(function () { if (scan.classList.contains('on')) scan.classList.add('set'); }, 800);
     if (!canStream) { native(); return; }
     read.textContent = 'starting camera'; hint.textContent = 'put your face in the frame.';
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
@@ -218,7 +264,7 @@
   }
 
   function closeScanner() {
-    cancelAnimationFrame(raf); raf = 0;
+    cancelAnimationFrame(raf); raf = 0; clearTimeout(setTimer);
     if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
     cam.srcObject = null;
     scan.className = ''; scan.setAttribute('aria-hidden', 'true');
