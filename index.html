@@ -21,6 +21,8 @@
   img{max-width:100%;height:auto;vertical-align:top}
   #wall img{width:118px;height:154px;margin:0 4px 4px 0}
   table{width:100%;max-width:800px;table-layout:fixed}
+  #soft{width:auto;table-layout:auto}
+  #soft td{width:150px}
   td,th{vertical-align:top;overflow-wrap:anywhere}
   #mugcell{width:177px}
   th{width:110px}
@@ -44,6 +46,21 @@
 <tr><th align="left">Release</th><td>Sunday</td></tr>
 <tr><th align="left">Description</th><td>cracked* &mdash; insanely good at something. homemade, anti-corporate, dope.</td></tr>
 <tr><td colspan="2"><form action="/join"><input type="submit" value="DOWNLOAD NOW"> <small>mirror: <a href="/join">mailing list</a></small></form></td></tr>
+</table>
+
+<hr>
+
+<b>Software</b>
+<table id="soft" border="0" cellspacing="0" cellpadding="6">
+<tr>
+  <td align="center">
+    <a href="https://cracked-portal.vercel.app/"><img src="/blackglass.png" width="64" height="64" alt="Blackglass"></a><br>
+    <b>Blackglass</b> <small>v0.1.0</small><br>
+    <small>free alternative to photoshop</small><br>
+    <form action="https://cracked-portal.vercel.app/"><input type="submit" value="DOWNLOAD"></form>
+    <small>mac &middot; 96 MB &middot; <span id="bg-left">500 copies</span></small>
+  </td>
+</tr>
 </table>
 
 <hr>
@@ -76,6 +93,16 @@
     else wall.appendChild(img);
     count.textContent = ++n;
   }
+
+  // Copies left on the current Blackglass release, from the portal that hands them out.
+  fetch('https://cracked-portal.vercel.app/api/apps').then(function (r) { return r.json(); }).then(function (j) {
+    var app = (j.apps || []).filter(function (a) { return a.slug === 'blackglass'; })[0];
+    var rel = app && app.releases && app.releases[0];
+    var el = document.getElementById('bg-left');
+    if (!rel || !el) return;
+    if (rel.soldOut) el.textContent = 'sold out';
+    else if (typeof rel.left === 'number' && rel.limit) el.textContent = rel.left + ' of ' + rel.limit + ' left';
+  }).catch(function () {});
 
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
     (j.ids || []).forEach(function (id) { add('/api/mugshot?id=' + id); });
