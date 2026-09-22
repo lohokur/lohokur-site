@@ -10,5 +10,35 @@
     "title": "linkedin",
     "artist": "loho kur",
     "duration": 68
+  },
+  {
+    "file": "/music/03-new-digital-species.m4a",
+    "title": "new digital species",
+    "artist": "loho kur",
+    "duration": 122
+  },
+  {
+    "file": "/music/04-take-your-time.m4a",
+    "title": "take your time",
+    "artist": "loho kur",
+    "duration": 85
+  },
+  {
+    "file": "/music/05-im-feeling-alive-today.m4a",
+    "title": "im feeling alive today",
+    "artist": "loho kur",
+    "duration": 37
+  },
+  {
+    "file": "/music/06-so-clear.mp3",
+    "title": "so clear",
+    "artist": "loho kur",
+    "duration": 55
+  },
+  {
+    "file": "/music/07-22.mp3",
+    "title": "22",
+    "artist": "loho kur",
+    "duration": 83
   }
 ]
