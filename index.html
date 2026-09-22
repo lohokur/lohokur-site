@@ -20,9 +20,10 @@
   body{background:#fff;color:#000}
   img{max-width:100%;height:auto;vertical-align:top}
   #wall img{width:118px;height:154px;margin:0 4px 4px 0}
-  table{width:100%;max-width:800px}
-  td{vertical-align:top}
-  @media (max-width:600px){ #mug{width:118px;height:154px} }
+  table{width:100%;max-width:800px;table-layout:fixed}
+  td,th{vertical-align:top;overflow-wrap:anywhere}
+  #mugcell{width:177px}
+  @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} }
 </style>
 </head>
 <body>
@@ -33,7 +34,7 @@
 
 <table border="1" cellspacing="0" cellpadding="6">
 <tr>
-  <td rowspan="7"><img id="mug" src="/mugshot.jpg" width="177" height="231" alt=""></td>
+  <td rowspan="7" id="mugcell"><img id="mug" src="/mugshot.jpg" width="177" height="231" alt=""></td>
   <th align="left">File</th><td>LOHO KUR</td>
 </tr>
 <tr><th align="left">Category</th><td>Software / Homemade</td></tr>
