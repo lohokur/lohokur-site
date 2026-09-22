@@ -29,6 +29,20 @@
   #idwall .arch{width:118px;height:154px;background:#111;color:#777;font-size:11px;display:flex;align-items:center;justify-content:center}
   #idwall figcaption{font-size:11px;text-align:center;overflow-wrap:anywhere;line-height:1.3}
   #idwall a{color:inherit;text-decoration:none}
+  /* the player: a bordered deck in the portal style. black monospace display, text progress bar, plain buttons, playlist rows */
+  #deck{width:100%;max-width:520px;table-layout:fixed}
+  #display{background:#000;color:#ccc;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px 10px;white-space:pre;overflow:hidden}
+  #display b{font-weight:normal;color:#fff}
+  #controls button{font:inherit;padding:2px 8px;margin-right:4px}
+  #controls input[type=range]{width:90px;vertical-align:middle}
+  #tracks{width:100%;font-size:13px;border-collapse:collapse}
+  #tracks tr{opacity:0;cursor:pointer}
+  #tracks tr.in{opacity:1}
+  #tracks tr.now{background:#000;color:#fff}
+  #tracks td{padding:2px 6px;overflow-wrap:anywhere}
+  #tracks td.n{width:2.2em;text-align:right;color:#666}
+  #tracks tr.now td.n{color:#aaa}
+  #tracks td.t{width:3.6em;text-align:right}
   table{width:100%;max-width:800px;table-layout:fixed}
   #soft{width:auto;table-layout:auto}
   #soft td{width:180px}
@@ -54,7 +68,7 @@
   #scan.finished .cut{display:none}
   #scan .term{position:absolute;left:10px;top:8px;right:10px;bottom:56px;overflow:hidden}
   #scan #log{margin:0;font:inherit;white-space:pre-wrap;word-break:break-all;color:#bbb;text-shadow:0 0 2px #000,0 0 2px #000}
-  #scan #log .cur{display:inline-block;width:7px;height:12px;background:#fff;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  #scan #log .cur,#display .cur{display:inline-block;width:7px;height:12px;background:#fff;vertical-align:-2px;animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
   #scan #ask{display:none;margin-top:2px;color:#bbb}
   #scan.asking #ask{display:block}
@@ -71,7 +85,7 @@
 <body>
 
 <b><a href="/" style="color:inherit;text-decoration:none">LOHO KUR</a></b> &middot; <span id="sub">Downloads</span><br>
-<small><a href="/music">Music</a> | <a href="/#identities">Identities</a> | <a href="/uniform">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
+<small><a href="/#music">Music</a> | <a href="/#identities">Identities</a> | <a href="/uniform">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
 <hr>
 <div id="home">
 
@@ -118,6 +132,16 @@
   <div class="bot"><button type="button" id="shoot">[ scan ]</button><button type="button" id="upload">[ upload ]</button><button type="button" id="close">[ exit ]</button></div>
 </div>
 
+</div>
+
+<div id="player" hidden>
+<b>Music</b> (<span id="trackcount">0</span>)
+<table id="deck" border="1" cellspacing="0" cellpadding="0">
+<tr><td id="display">loading playlist<span class="cur"></span></td></tr>
+<tr><td id="controls" style="padding:6px"><button type="button" id="prev" title="previous">|&lt;</button><button type="button" id="play" title="play">&gt;</button><button type="button" id="pause" title="pause">||</button><button type="button" id="stop" title="stop">&#9632;</button><button type="button" id="next" title="next">&gt;|</button> <small>vol</small> <input type="range" id="vol" min="0" max="100" value="80"></td></tr>
+<tr><td style="padding:0"><table id="tracks"><tbody id="tracklist"></tbody></table></td></tr>
+</table>
+<audio id="audio" preload="none"></audio>
 </div>
 
 <div id="idview" hidden>
@@ -439,21 +463,88 @@
       idwall.appendChild(fig);
     });
   }
+  /* ---- music view ----
+     /#music turns the page into a deck: display, transport, playlist. Tracks come from
+     /music/playlist.json: [{"file":"/music/x.mp3","title":"x","artist":"..."}]. */
+  var player = document.getElementById('player'), audio = document.getElementById('audio'), display = document.getElementById('display');
+  var tracklist = document.getElementById('tracklist'), tracks = [], cur = -1, playlistLoaded = false;
+  function fmt(t) { t = Math.max(0, t | 0); return (t / 60 | 0) + ':' + ('0' + t % 60).slice(-2); }
+  function bar() {
+    var w = 26, p = audio.duration ? audio.currentTime / audio.duration : 0, f = Math.round(p * w);
+    return '[' + new Array(f + 1).join('#') + new Array(w - f + 1).join('-') + ']';
+  }
+  function paint() {
+    if (!tracks.length) { display.innerHTML = 'no tracks filed yet.\n\n' + bar() + '  0:00 / 0:00\nstopped'; return; }
+    var t = tracks[cur] || tracks[0], state = cur < 0 ? 'stopped' : audio.paused ? (audio.currentTime ? 'paused' : 'stopped') : 'playing';
+    display.innerHTML = '<b>' + esc(('0' + ((cur < 0 ? 0 : cur) + 1)).slice(-2) + '  ' + t.title) + '</b>' + (t.artist ? '\n' + esc(t.artist) : '\n') +
+      '\n' + bar() + '  ' + fmt(audio.currentTime) + ' / ' + fmt(audio.duration || t.duration || 0) + '\n' + state;
+    var rows = tracklist.children;
+    for (var i = 0; i < rows.length; i++) rows[i].classList.toggle('now', i === cur);
+  }
+  function load(i, andPlay) {
+    if (!tracks.length) return;
+    cur = (i + tracks.length) % tracks.length;
+    audio.src = tracks[cur].file;
+    if (andPlay) audio.play().catch(function () {});
+    paint();
+  }
+  function loadPlaylist(done) {
+    if (playlistLoaded) return done();
+    fetch('/music/playlist.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      tracks = Array.isArray(j) ? j : [];
+      tracklist.innerHTML = '';
+      tracks.forEach(function (t, i) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td class="n">' + ('0' + (i + 1)).slice(-2) + '</td><td>' + esc(t.title) + (t.artist ? ' <small>' + esc(t.artist) + '</small>' : '') + '</td><td class="t">' + (t.duration ? fmt(t.duration) : '') + '</td>';
+        tr.addEventListener('click', function () { load(i, true); });
+        tracklist.appendChild(tr);
+      });
+      document.getElementById('trackcount').textContent = tracks.length;
+      playlistLoaded = true; done();
+    }).catch(function () { tracks = []; playlistLoaded = true; done(); });
+  }
+  document.getElementById('play').addEventListener('click', function () { if (cur < 0) load(0, true); else audio.play().catch(function () {}); });
+  document.getElementById('pause').addEventListener('click', function () { audio.pause(); paint(); });
+  document.getElementById('stop').addEventListener('click', function () { audio.pause(); audio.currentTime = 0; paint(); });
+  document.getElementById('next').addEventListener('click', function () { load(cur + 1, !audio.paused || cur < 0); });
+  document.getElementById('prev').addEventListener('click', function () { load(cur - 1, !audio.paused || cur < 0); });
+  document.getElementById('vol').addEventListener('input', function (e) { audio.volume = e.target.value / 100; });
+  audio.volume = 0.8;
+  audio.addEventListener('timeupdate', paint); audio.addEventListener('play', paint); audio.addEventListener('pause', paint);
+  audio.addEventListener('loadedmetadata', paint);
+  audio.addEventListener('ended', function () { if (cur + 1 < tracks.length) load(cur + 1, true); else { audio.currentTime = 0; paint(); } });
+  display.addEventListener('click', function (e) {              // click on the bar to seek
+    if (!audio.duration) return;
+    var r = display.getBoundingClientRect(), p = (e.clientX - r.left - 10) / (display.clientWidth - 20);
+    if (p >= 0 && p <= 1) audio.currentTime = p * audio.duration;
+  });
+
+  var VIEWS = { '#identities': { el: idview, sub: 'Identities' }, '#music': { el: player, sub: 'Music' } };
   function route() {
-    var wantIds = location.hash === '#identities';
+    var v = VIEWS[location.hash];
     idTimers.forEach(function (t) { clearTimeout(t); }); idTimers = [];
-    home.hidden = wantIds; idview.hidden = !wantIds;
-    sub.textContent = wantIds ? 'Identities' : 'Downloads';
+    home.hidden = !!v; idview.hidden = !(v && v.el === idview); player.hidden = !(v && v.el === player);
+    sub.textContent = v ? v.sub : 'Downloads';
     document.title = 'LOHO KUR - ' + sub.textContent;
-    if (!wantIds) return;
-    buildIdentities();
-    var figs = idwall.querySelectorAll('figure'), shown = 0;
-    document.getElementById('idcount').textContent = '0';
-    figs.forEach(function (f, i) {
-      f.classList.remove('in');
-      idTimers.push(setTimeout(function () { f.classList.add('in'); document.getElementById('idcount').textContent = ++shown; }, 60 + i * 45));
-    });
+    if (!v) return;
     window.scrollTo(0, 0);
+    if (v.el === idview) {
+      buildIdentities();
+      var figs = idwall.querySelectorAll('figure'), shown = 0;
+      document.getElementById('idcount').textContent = '0';
+      figs.forEach(function (f, i) {
+        f.classList.remove('in');
+        idTimers.push(setTimeout(function () { f.classList.add('in'); document.getElementById('idcount').textContent = ++shown; }, 60 + i * 45));
+      });
+      return;
+    }
+    // music: the deck comes up, then the playlist rows list in one by one
+    if (!playlistLoaded) display.innerHTML = 'loading playlist<span class="cur"></span>';
+    loadPlaylist(function () {
+      paint();
+      var rows = tracklist.children;
+      for (var i = 0; i < rows.length; i++) (function (row, i) { row.classList.remove('in'); idTimers.push(setTimeout(function () { row.classList.add('in'); }, 80 + i * 60)); })(rows[i], i);
+    });
   }
   window.addEventListener('hashchange', route);
   route();
