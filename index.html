@@ -22,6 +22,13 @@
   #wall figure{display:inline-block;vertical-align:top;width:118px;margin:0 4px 6px 0}
   #wall img{width:118px;height:154px}
   #wall figcaption{font-size:11px;text-align:center;overflow-wrap:anywhere;line-height:1.3}
+  /* the identities view: same grid as the hackers wall; tiles list in one by one like a directory */
+  #idwall figure{display:inline-block;vertical-align:top;width:118px;margin:0 4px 6px 0;opacity:0}
+  #idwall figure.in{opacity:1}
+  #idwall img{width:118px;height:154px;object-fit:cover;filter:grayscale(1)}
+  #idwall .arch{width:118px;height:154px;background:#111;color:#777;font-size:11px;display:flex;align-items:center;justify-content:center}
+  #idwall figcaption{font-size:11px;text-align:center;overflow-wrap:anywhere;line-height:1.3}
+  #idwall a{color:inherit;text-decoration:none}
   table{width:100%;max-width:800px;table-layout:fixed}
   #soft{width:auto;table-layout:auto}
   #soft td{width:180px}
@@ -63,9 +70,10 @@
 </head>
 <body>
 
-<b><a href="/" style="color:inherit;text-decoration:none">LOHO KUR</a></b> &middot; Downloads<br>
-<small><a href="/music">Music</a> | <a href="/identities">Identities</a> | <a href="https://deviantbyloho.com">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
+<b><a href="/" style="color:inherit;text-decoration:none">LOHO KUR</a></b> &middot; <span id="sub">Downloads</span><br>
+<small><a href="/music">Music</a> | <a href="/#identities">Identities</a> | <a href="https://deviantbyloho.com">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
 <hr>
+<div id="home">
 
 <table border="1" cellspacing="0" cellpadding="6">
 <tr>
@@ -98,7 +106,7 @@
 
 <hr>
 
-<b>Mugshots</b> (<span id="count">0</span>) <button type="button" id="plus" title="add your mugshot">+</button> <small>add yours</small>
+<b>Hackers</b> (<span id="count">0</span>) <button type="button" id="plus" title="scan yourself in">+</button> <small>scan yourself in</small>
 <input type="file" id="file" accept="image/*" hidden>
 <input type="file" id="snap" accept="image/*" capture="user" hidden>
 <p id="msg" hidden></p>
@@ -111,6 +119,12 @@
   <div class="bot"><button type="button" id="shoot">[ scan ]</button><button type="button" id="upload">[ upload ]</button><button type="button" id="close">[ exit ]</button></div>
 </div>
 
+</div>
+
+<div id="idview" hidden>
+<b>Identities</b> (<span id="idcount">0</span>) <small>the house register</small>
+<div id="idwall"></div>
+</div>
 <hr>
 <small>&copy; 2026 LOHO KUR</small>
 
@@ -399,6 +413,51 @@
       .catch(function () { done(false, 'not added'); })
       .finally(function () { file.value = ''; });
   }
+
+
+  /* ---- identities view ----
+     /#identities turns this same page into the house register: the home sections go,
+     the identities list in as thumbnails, one by one, laid out like the hackers wall.
+     The wordmark (href="/") brings the home view back. */
+  var IDENTITIES = [
+    ['LK-016', 'a walking hazard'], ['LK-017', 'the quiet fixer'], ['LK-018', 'the one who chose stillness'],
+    ['LK-019', 'the armored cook'], ['LK-020', 'the structured enigma'], ['LK-021', 'the guarded enigma'],
+    ['LK-022', 'the one with the new uniform'], ['LK-023', 'someone who keeps leaving'], ['LK-024', 'the one in armor'],
+    ['LK-025', 'the one who left'],
+    ['LK-006'], ['LK-010'], ['LK-011'], ['LK-012'], ['LK-013'], ['LK-014'], ['LK-015']
+  ];
+  var home = document.getElementById('home'), idview = document.getElementById('idview'), idwall = document.getElementById('idwall');
+  var sub = document.getElementById('sub'), idTimers = [];
+  function buildIdentities() {
+    if (idwall.firstChild) return;
+    IDENTITIES.forEach(function (it) {
+      var fig = document.createElement('figure'), a = document.createElement('a');
+      a.href = '/identities#' + it[0];
+      if (it[1]) { var img = new Image(); img.src = '/identities/' + it[0] + '.jpg'; img.width = 118; img.height = 154; img.alt = it[0]; img.loading = 'lazy'; a.appendChild(img); }
+      else { var box = document.createElement('div'); box.className = 'arch'; box.textContent = 'unclassified'; a.appendChild(box); }
+      fig.appendChild(a);
+      var cap = document.createElement('figcaption'); cap.textContent = it[0] + (it[1] ? ' · ' + it[1] : ''); fig.appendChild(cap);
+      idwall.appendChild(fig);
+    });
+  }
+  function route() {
+    var wantIds = location.hash === '#identities';
+    idTimers.forEach(function (t) { clearTimeout(t); }); idTimers = [];
+    home.hidden = wantIds; idview.hidden = !wantIds;
+    sub.textContent = wantIds ? 'Identities' : 'Downloads';
+    document.title = 'LOHO KUR - ' + sub.textContent;
+    if (!wantIds) return;
+    buildIdentities();
+    var figs = idwall.querySelectorAll('figure'), shown = 0;
+    document.getElementById('idcount').textContent = '0';
+    figs.forEach(function (f, i) {
+      f.classList.remove('in');
+      idTimers.push(setTimeout(function () { f.classList.add('in'); document.getElementById('idcount').textContent = ++shown; }, 60 + i * 45));
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
 
   // Last, once everything above exists.
   plus.addEventListener('click', openScanner);
