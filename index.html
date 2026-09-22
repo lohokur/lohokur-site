@@ -19,7 +19,9 @@
 <style>
   body{background:#fff;color:#000}
   img{max-width:100%;height:auto;vertical-align:top}
-  #wall img{width:118px;height:154px;margin:0 4px 4px 0}
+  #wall figure{display:inline-block;vertical-align:top;width:118px;margin:0 4px 6px 0}
+  #wall img{width:118px;height:154px}
+  #wall figcaption{font-size:11px;text-align:center;overflow-wrap:anywhere;line-height:1.3}
   table{width:100%;max-width:800px;table-layout:fixed}
   #soft{width:auto;table-layout:auto}
   #soft td{width:180px}
@@ -47,6 +49,10 @@
   #scan #log{margin:0;font:inherit;white-space:pre-wrap;word-break:break-all;color:#bbb;text-shadow:0 0 2px #000,0 0 2px #000}
   #scan #log .cur{display:inline-block;width:7px;height:12px;background:#fff;vertical-align:-2px;animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
+  #scan #ask{display:none;margin-top:2px;color:#bbb}
+  #scan.asking #ask{display:block}
+  #scan #aliasin{font:inherit;background:#000;color:#fff;border:0;border-bottom:1px solid #666;outline:0;width:14em;padding:0;margin:0 4px 0 0;letter-spacing:.02em}
+  #scan #ask button{padding:0 4px}
   #scan #doneimg{display:none;width:118px;height:154px;border:1px solid #fff;margin:6px 0 0}
   #scan.finished #doneimg{display:block}
   #scan .bot{position:absolute;left:4px;bottom:10px}
@@ -101,7 +107,7 @@
 <div id="scan" aria-hidden="true">
   <video id="cam" autoplay playsinline muted></video>
   <div class="cut"></div>
-  <div class="term"><pre id="log"></pre><img id="doneimg" alt=""></div>
+  <div class="term"><pre id="log"></pre><div id="ask">alias: <input id="aliasin" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="(enter to skip)"><button type="button" id="aliasok">[ ok ]</button></div><img id="doneimg" alt=""></div>
   <div class="bot"><button type="button" id="shoot">[ scan ]</button><button type="button" id="upload">[ upload ]</button><button type="button" id="close">[ exit ]</button></div>
 </div>
 
@@ -120,12 +126,14 @@
 
   function say(t) { msg.textContent = t; msg.hidden = !t; }
 
-  function add(src, first) {
-    var img = new Image();
-    img.src = src; img.width = 118; img.height = 154; img.alt = '';
+  function add(src, first, alias) {
+    var fig = document.createElement('figure'), img = new Image();
+    img.src = src; img.width = 118; img.height = 154; img.alt = alias || '';
     img.loading = 'lazy';
-    if (first && wall.firstChild) wall.insertBefore(img, wall.firstChild);
-    else wall.appendChild(img);
+    fig.appendChild(img);
+    if (alias) { var cap = document.createElement('figcaption'); cap.textContent = alias; fig.appendChild(cap); }
+    if (first && wall.firstChild) wall.insertBefore(fig, wall.firstChild);
+    else wall.appendChild(fig);
     count.textContent = ++n;
   }
 
@@ -147,7 +155,7 @@
   }).catch(function () {});
 
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
-    (j.ids || []).forEach(function (id) { add('/api/mugshot?id=' + id); });
+    (j.items || (j.ids || []).map(function (id) { return { id: id }; })).forEach(function (it) { add('/api/mugshot?id=' + it.id, false, it.alias); });
   }).catch(function () {});
 
   /* ---- the scanner ----
@@ -230,7 +238,7 @@
   function closeScanner() {
     cancelAnimationFrame(raf); raf = 0; stopTimers();
     if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
-    cam.srcObject = null; status = ''; doneimg.removeAttribute('src');
+    cam.srcObject = null; status = ''; doneimg.removeAttribute('src'); pendingAlias = null;
     scan.className = ''; scan.setAttribute('aria-hidden', 'true');
   }
 
@@ -295,19 +303,30 @@
     finish(dataUrl);
   }
 
-  // Develop, show, file, close.
+  // Develop, show, ask for an alias, file, close.
+  var ask = document.getElementById('ask'), aliasin = document.getElementById('aliasin'), pendingAlias = null;
   function finish(dataUrl) {
     busy = true; status = '';
     logln('develop: gray, stretch 1%, curve, posterize 8, grain, vignette -> jpeg ' + Math.round(dataUrl.length * 0.75 / 1024) + 'k');
     doneimg.src = dataUrl;
     scan.classList.add('finished');
-    logln('POST /api/mugshots');
-    upload(dataUrl, function (ok, message) {
-      logln(ok ? '200 ok ' + (message || '') : 'refused: ' + (message || 'try again').toLowerCase());
-      later(ok ? 500 : 300, function () { logln(ok ? 'subject logged. you are in the system.' : 'not logged'); });
-      later(ok ? 3200 : 3600, closeScanner);
-    });
+    // alias prompt: enter or [ ok ] files it; empty skips
+    aliasin.value = ''; scan.classList.add('asking');
+    later(50, function () { aliasin.focus(); });
+    pendingAlias = function () {
+      var alias = aliasin.value.replace(/\s+/g, ' ').trim().slice(0, 24);
+      pendingAlias = null; scan.classList.remove('asking');
+      logln('alias ' + (alias ? JSON.stringify(alias) : '(none)'));
+      logln('POST /api/mugshots');
+      upload(dataUrl, alias, function (ok, message) {
+        logln(ok ? '200 ok ' + (message || '') : 'refused: ' + (message || 'try again').toLowerCase());
+        later(ok ? 500 : 300, function () { logln(ok ? 'subject logged. you are in the system.' : 'not logged'); });
+        later(ok ? 3200 : 3600, closeScanner);
+      });
+    };
   }
+  aliasin.addEventListener('keydown', function (e) { if (e.key === 'Enter' && pendingAlias) { e.preventDefault(); pendingAlias(); } });
+  document.getElementById('aliasok').addEventListener('click', function () { if (pendingAlias) pendingAlias(); });
 
   file.addEventListener('change', function () {
     var f = file.files && file.files[0];
@@ -317,7 +336,11 @@
     var im = new Image();
     im.onload = function () {
       URL.revokeObjectURL(url);
-      try { upload(mugshot(im), function (ok, message) { say(ok ? '' : (message || 'not added')); }); } catch (e) { say('could not read that image'); }
+      say('');
+      scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
+      lines = []; status = ''; t0 = performance.now(); busy = true;
+      logln('read ' + (f.name || 'image') + ' ' + Math.round(f.size / 1024) + 'k');
+      try { finish(mugshot(im)); } catch (e) { logln('decode failed'); later(1500, closeScanner); }
     };
     im.onerror = function () { say('could not read that image'); };
     im.src = url;
@@ -363,14 +386,14 @@
     return c.toDataURL('image/jpeg', 0.82);
   }
 
-  function upload(dataUrl, done) {
+  function upload(dataUrl, alias, done) {
     fetch('/api/mugshots', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: dataUrl })
+      body: JSON.stringify({ data: dataUrl, alias: alias || '' })
     }).then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
       .then(function (ok) {
-        if (ok[0]) add(dataUrl, true);
+        if (ok[0]) add(dataUrl, true, ok[1] && ok[1].alias);
         done(ok[0], ok[1] && (ok[1].message || (ok[1].id ? 'id=' + ok[1].id : '')));
       })
       .catch(function () { done(false, 'not added'); })

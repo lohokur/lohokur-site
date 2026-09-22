@@ -99,3 +99,23 @@ export async function screen(buf) {
   if (!v.safe) return { ok: false, message: 'Not that.', reason: v.reason };
   return { ok: true, reason: v.reason };
 }
+
+/* The alias under a mugshot goes through the same moderation endpoint as text. */
+export async function screenText(text) {
+  const key = process.env.OPENAI_API_KEY;
+  if (!text) return { ok: true };
+  if (!key) return { ok: false, message: 'The wall is closed for now.' };
+  let mod;
+  try {
+    mod = await call('moderations', { model: 'omni-moderation-latest', input: text }, key);
+  } catch (e) {
+    console.error('screenText failed', e.message);
+    return { ok: false, message: 'Could not check the alias. Try again.' };
+  }
+  const m = mod.results && mod.results[0];
+  if (m && m.flagged) {
+    const cats = Object.keys(m.categories || {}).filter((c) => m.categories[c]).join(',');
+    return { ok: false, message: 'Not that alias.', reason: 'moderation: ' + cats };
+  }
+  return { ok: true };
+}

@@ -21,6 +21,7 @@ export async function ensure(sql) {
     created_at timestamptz NOT NULL DEFAULT now()
   )`;
   await sql`CREATE INDEX IF NOT EXISTS mugshots_ip_recent ON mugshots (ip_hash, created_at)`;
+  await sql`ALTER TABLE mugshots ADD COLUMN IF NOT EXISTS alias text`;
   ensured = true;
 }
 

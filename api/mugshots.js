@@ -1,11 +1,11 @@
 import crypto from 'node:crypto';
 import { db, ensure, clientIp } from './_mugshots.js';
-import { screen } from './_screen.js';
+import { screen, screenText } from './_screen.js';
 
 /* The mugshot wall.
 
-   GET  → ids of every visible mugshot, newest first. The page turns each id
-          into <img src="/api/mugshot?id=N">.
+   GET  → every visible mugshot, newest first, as {id, alias}. The page turns
+          each id into <img src="/api/mugshot?id=N"> with the alias under it.
    POST → adds one. The browser has already cropped it to 3:4, turned it
           grayscale and shrunk it to 590×770, so what arrives is a small JPEG
           as base64. Stored as bytes in Postgres — no blob store to run.
@@ -16,7 +16,7 @@ import { screen } from './_screen.js';
    Hide a bad one with tools/mugshots.mjs. */
 
 const MAX_BYTES = 250 * 1024;
-const PER_IP_PER_DAY = 5;
+const PER_IP_PER_DAY = 20;
 
 export const config = { api: { bodyParser: { sizeLimit: '1mb' } } };
 
@@ -31,9 +31,9 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const rows = await sql`SELECT id FROM mugshots WHERE NOT hidden ORDER BY id DESC LIMIT 500`;
+    const rows = await sql`SELECT id, alias FROM mugshots WHERE NOT hidden ORDER BY id DESC LIMIT 500`;
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json({ ids: rows.map((r) => r.id) });
+    return res.status(200).json({ ids: rows.map((r) => r.id), items: rows.map((r) => ({ id: r.id, alias: r.alias || '' })) });
   }
 
   if (req.method !== 'POST') {
@@ -48,6 +48,8 @@ export default async function handler(req, res) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const b64 = String(body.data || '').replace(/^data:image\/jpeg;base64,/, '');
   if (!b64) return res.status(400).json({ error: 'data', message: 'No image.' });
+  // The alias: one line, printable, at most 24 characters. Optional.
+  const alias = String(body.alias || '').replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24);
 
   const buf = Buffer.from(b64, 'base64');
   if (buf.length < 1024 || buf.length > MAX_BYTES) {
@@ -65,12 +67,16 @@ export default async function handler(req, res) {
   }
 
   // Faces only. Refused photos are not stored anywhere.
-  const check = await screen(buf);
+  const [check, textCheck] = await Promise.all([screen(buf), screenText(alias)]);
   if (!check.ok) {
     console.log('mugshot refused:', check.reason || check.message);
     return res.status(422).json({ error: 'screen', message: check.message });
   }
+  if (!textCheck.ok) {
+    console.log('alias refused:', textCheck.reason || textCheck.message);
+    return res.status(422).json({ error: 'alias', message: textCheck.message });
+  }
 
-  const [{ id }] = await sql`INSERT INTO mugshots (image, bytes, ip_hash) VALUES (${buf}, ${buf.length}, ${ipHash}) RETURNING id`;
-  return res.status(200).json({ ok: true, id });
+  const [{ id }] = await sql`INSERT INTO mugshots (image, bytes, ip_hash, alias) VALUES (${buf}, ${buf.length}, ${ipHash}, ${alias || null}) RETURNING id`;
+  return res.status(200).json({ ok: true, id, alias });
 }

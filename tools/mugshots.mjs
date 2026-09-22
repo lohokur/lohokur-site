@@ -29,9 +29,9 @@ const [cmd, arg] = process.argv.slice(2);
 const id = Number.parseInt(arg || '', 10);
 
 if (!cmd) {
-  const rows = await sql`SELECT id, bytes, hidden, created_at FROM mugshots ORDER BY id DESC LIMIT 50`;
+  const rows = await sql`SELECT id, bytes, hidden, created_at, alias FROM mugshots ORDER BY id DESC LIMIT 50`;
   for (const r of rows) {
-    console.log(`${String(r.id).padStart(5)}  ${String(r.bytes).padStart(7)} B  ${r.created_at.toISOString().slice(0, 16)}  ${r.hidden ? 'HIDDEN' : ''}`);
+    console.log(`${String(r.id).padStart(5)}  ${String(r.bytes).padStart(7)} B  ${r.created_at.toISOString().slice(0, 16)}  ${r.hidden ? 'HIDDEN' : '      '}  ${r.alias || ''}`);
   }
   console.log(`${rows.length} shown`);
 } else if ((cmd === 'hide' || cmd === 'show') && id) {
