@@ -1,80 +1,67 @@
 [
   {
     "file": "/music/01-my-final-song.m4a",
-    "title": "my final song",
-    "artist": "loho kur",
+    "title": "my final song [DEMO]",
     "duration": 162
   },
   {
     "file": "/music/02-linkedin.m4a",
-    "title": "linkedin",
-    "artist": "loho kur",
+    "title": "linkedin [DEMO]",
     "duration": 68
   },
   {
     "file": "/music/03-new-digital-species.m4a",
-    "title": "new digital species",
-    "artist": "loho kur",
+    "title": "new digital species [DEMO]",
     "duration": 122
   },
   {
     "file": "/music/04-take-your-time.m4a",
-    "title": "take your time",
-    "artist": "loho kur",
+    "title": "take your time [DEMO]",
     "duration": 85
   },
   {
     "file": "/music/05-im-feeling-alive-today.m4a",
-    "title": "im feeling alive today",
-    "artist": "loho kur",
+    "title": "im feeling alive today [DEMO]",
     "duration": 37
   },
   {
     "file": "/music/06-so-clear.mp3",
-    "title": "so clear",
-    "artist": "loho kur",
+    "title": "so clear [DEMO]",
     "duration": 55
   },
   {
     "file": "/music/07-22.mp3",
-    "title": "22",
-    "artist": "loho kur",
+    "title": "22 [DEMO]",
     "duration": 83
   },
   {
     "file": "/music/08-birds-fly-high.mp3",
-    "title": "birds fly high",
-    "artist": "loho kur",
+    "title": "birds fly high [DEMO]",
     "duration": 148
   },
   {
     "file": "/music/09-snapback-demo.m4a",
-    "title": "snapback (demo)",
-    "artist": "loho kur",
+    "title": "snapback [DEMO]",
     "duration": 80
   },
   {
     "file": "/music/10-snapback-early-demo.m4a",
-    "title": "snapback (early demo)",
-    "artist": "loho kur",
+    "title": "snapback (early) [DEMO]",
     "duration": 80
   },
   {
     "file": "/music/11-when-the-record-goes-back.m4a",
-    "title": "when the record goes back",
-    "artist": "loho kur",
+    "title": "when the record goes back [DEMO]",
     "duration": 124
   },
   {
     "file": "/music/12-lets-go-home-demo.m4a",
-    "title": "let's go home (demo)",
-    "artist": "loho kur",
+    "title": "let's go home [DEMO]",
     "duration": 62
   },
   {
     "file": "/music/13-dont-die.m4a",
-    "title": "dont die",
-    "artist": "loho kur",
+    "title": "dont die [DEMO]",
     "duration": 56
   }
 ]
