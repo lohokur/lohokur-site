@@ -7,7 +7,9 @@ one edge middleware and one serverless function. No framework.
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | Homepage, built around an orbital carousel of the 17 identities |
+| `index.html` | Homepage: bare white page, the mugshot and a download button. Software releases land here |
+| `canvas.html` | The Canvas at `/canvas` — the former homepage, an orbital carousel of the 17 identities plus the OS view |
+| `mugshot.jpg` | The homepage photo |
 | `identities.html`, `identities/` | The identity set |
 | `studio.html`, `pricing.html` | Studio and pricing pages |
 | `middleware.js` | Vercel edge middleware gating the private portfolio |
