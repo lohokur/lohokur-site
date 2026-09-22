@@ -106,7 +106,7 @@
 <tr><th align="left">Category</th><td>Software / Homemade</td></tr>
 <tr><th align="left">Author</th><td>loho kur</td></tr>
 <tr><th align="left">License</th><td>Free</td></tr>
-<tr><th align="left">Release</th><td>Sunday</td></tr>
+<tr><th align="left">Release</th><td>Sunday <span id="cd" style="font-family:ui-monospace,Menlo,monospace;font-size:13px"></span></td></tr>
 <tr><th align="left">Description</th><td>cracked* &mdash; insanely good at something. homemade, anti-corporate, dope.</td></tr>
 <tr><td colspan="2"><form action="/join"><input type="submit" value="DOWNLOAD NOW"> <small>mirror: <a href="/join">mailing list</a></small></form></td></tr>
 </table>
@@ -203,6 +203,36 @@
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
     (j.items || (j.ids || []).map(function (id) { return { id: id }; })).forEach(function (it) { add('/api/mugshot?id=' + it.id, false, it.alias); });
   }).catch(function () {});
+
+
+  /* ---- release countdown ----
+     Counts to the next release: Sunday at RELEASE_HOUR in Europe/Paris, every week.
+     When it lands, it rolls straight on to the following Sunday. */
+  var RELEASE_HOUR = 12, RELEASE_TZ = 'Europe/Paris';
+  var cdEl = document.getElementById('cd');
+  var dtf = new Intl.DateTimeFormat('en-GB', { timeZone: RELEASE_TZ, hour12: false, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', weekday: 'short' });
+  function zoned(ms) {                        // Paris wall-clock parts for an instant
+    var o = {}; dtf.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; });
+    return { y: +o.year, m: +o.month, d: +o.day, h: +o.hour % 24, mi: +o.minute, s: +o.second, wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(o.weekday) };
+  }
+  function parisToUtc(y, m, d, h) {           // instant for a Paris wall-clock time, DST-safe
+    var guess = Date.UTC(y, m - 1, d, h), i;
+    for (i = 0; i < 2; i++) { var z = zoned(guess); guess -= Date.UTC(z.y, z.m - 1, z.d, z.h, z.mi, z.s) - Date.UTC(y, m - 1, d, h); }
+    return guess;
+  }
+  function nextRelease(now) {
+    var z = zoned(now), days = (7 - z.wd) % 7;
+    var t = parisToUtc(z.y, z.m, z.d + days, RELEASE_HOUR);
+    if (t <= now) t = parisToUtc(z.y, z.m, z.d + days + 7, RELEASE_HOUR);
+    return t;
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function tickCountdown() {
+    var now = Date.now(), left = Math.max(0, nextRelease(now) - now) / 1000 | 0;
+    var d = left / 86400 | 0, h = left / 3600 % 24 | 0, m = left / 60 % 60 | 0, s = left % 60;
+    cdEl.textContent = 'in ' + d + 'd ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+  }
+  tickCountdown(); setInterval(tickCountdown, 1000);
 
   /* ---- the scanner ----
      A terminal session. The log prints what is actually happening: the command,
