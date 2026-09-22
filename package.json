@@ -2,7 +2,6 @@
   "name": "lohokur-site",
   "private": true,
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.128.0",
     "@neondatabase/serverless": "^1.1.0",
     "@vercel/edge": "^1.2.2"
   },
