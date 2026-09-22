@@ -27,6 +27,36 @@
   #mugcell{width:177px}
   th{width:110px}
   @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} th{width:86px} }
+
+  /* the scanner: full-screen camera, a clear 3:4 cutout, dim surround, corner brackets */
+  #scan{position:fixed;inset:0;z-index:100;background:#000;color:#fff;display:none;
+    font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  #scan.on{display:block}
+  #scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  #scan .cut{position:absolute;left:50%;top:50%;width:min(66vw,300px);aspect-ratio:3/4;transform:translate(-50%,-50%);
+    box-shadow:0 0 0 200vmax rgba(0,0,0,.6);transition:box-shadow .4s}
+  #scan.lock .cut{box-shadow:0 0 0 200vmax rgba(0,40,20,.6)}
+  #scan .br{position:absolute;width:34px;height:34px;border:3px solid #fff;transition:border-color .3s}
+  #scan .br.tl{left:-3px;top:-3px;border-right:0;border-bottom:0}
+  #scan .br.tr{right:-3px;top:-3px;border-left:0;border-bottom:0}
+  #scan .br.bl{left:-3px;bottom:-3px;border-right:0;border-top:0}
+  #scan .br.brr{right:-3px;bottom:-3px;border-left:0;border-top:0}
+  #scan.lock .br{border-color:#4f8}
+  #scan .sweep{position:absolute;left:0;right:0;top:0;height:2px;background:#4f8;box-shadow:0 0 12px #4f8;opacity:0}
+  #scan.lock .sweep{opacity:1;animation:sweep 1.6s linear infinite}
+  @keyframes sweep{from{top:0}to{top:100%}}
+  #scan .top,#scan .bot{position:absolute;left:0;right:0;padding:18px 16px;text-align:center;line-height:1.7}
+  #scan .top{top:0;background:linear-gradient(rgba(0,0,0,.85),transparent)}
+  #scan .bot{bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding-bottom:28px}
+  #scan .read{color:#4f8;min-height:1.7em}
+  #scan .lock .read{color:#4f8}
+  #scan button{font:inherit;letter-spacing:inherit;text-transform:inherit;background:#fff;color:#000;border:0;padding:12px 26px;margin:6px}
+  #scan button.ghost{background:transparent;color:#fff;border:1px solid #fff}
+  #scan .x{position:absolute;top:14px;right:14px;width:40px;height:40px;padding:0;margin:0;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);font-size:18px}
+  #scan .done{position:absolute;inset:0;background:#000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;line-height:1.8}
+  #scan.finished .done{display:flex}
+  #scan .done img{width:177px;height:231px;border:1px solid #4f8}
+  #scan .done b{color:#4f8;font-size:14px}
 </style>
 </head>
 <body>
@@ -70,6 +100,15 @@
 <input type="file" id="file" accept="image/*" hidden>
 <p id="msg" hidden></p>
 <div id="wall"></div>
+
+<div id="scan" aria-hidden="true">
+  <video id="cam" autoplay playsinline muted></video>
+  <div class="cut"><span class="br tl"></span><span class="br tr"></span><span class="br bl"></span><span class="br brr"></span><span class="sweep"></span></div>
+  <div class="top">scanning subject<br><span class="read" id="read">starting camera</span></div>
+  <div class="bot"><span id="hint">put your face in the frame. hold still.</span><br><button type="button" id="shoot">scan</button><button type="button" class="ghost" id="upload">upload instead</button></div>
+  <button type="button" class="x" id="close" aria-label="close">&times;</button>
+  <div class="done"><img id="doneimg" alt=""><b id="donetext">subject logged</b><span id="donesub">you're in the system.</span></div>
+</div>
 
 <hr>
 <small>&copy; 2026 LOHO KUR</small>
@@ -116,7 +155,97 @@
     (j.ids || []).forEach(function (id) { add('/api/mugshot?id=' + id); });
   }).catch(function () {});
 
-  plus.addEventListener('click', function () { file.click(); });
+  /* ---- the scanner ----
+     Same idea as the metal patch authenticator on deviantbyloho: live camera,
+     a clear cutout, brackets that lock green when the centre sample reads like
+     a face (mid light, real texture), then a scan. Hold still for a moment and
+     it scans on its own. No camera, or no permission: upload instead. */
+  var scan = document.getElementById('scan');
+  var cam = document.getElementById('cam');
+  var read = document.getElementById('read');
+  var hint = document.getElementById('hint');
+  var shoot = document.getElementById('shoot');
+  var stream = null, raf = 0, lockSince = 0, busy = false;
+  var probe = document.createElement('canvas'); probe.width = 48; probe.height = 64;
+  var pctx = probe.getContext('2d', { willReadFrequently: true });
+
+  plus.addEventListener('click', openScanner);
+  if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
+  document.getElementById('close').addEventListener('click', closeScanner);
+  document.getElementById('upload').addEventListener('click', function () { closeScanner(); file.click(); });
+  shoot.addEventListener('click', function () { if (stream) capture(); });
+
+  function openScanner() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { file.click(); return; }
+    scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
+    read.textContent = 'starting camera'; hint.textContent = 'put your face in the frame. hold still.';
+    busy = false; lockSince = 0;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
+      .then(function (s) { stream = s; cam.srcObject = s; return cam.play(); })
+      .then(function () { raf = requestAnimationFrame(tick); })
+      .catch(function () { read.textContent = 'no camera'; hint.textContent = 'camera blocked. upload a photo instead.'; });
+  }
+
+  function closeScanner() {
+    cancelAnimationFrame(raf); raf = 0;
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    cam.srcObject = null;
+    scan.className = ''; scan.setAttribute('aria-hidden', 'true');
+  }
+
+  // The 3:4 cutout, in video pixels, un-mirrored. What is captured is exactly what sits inside the brackets.
+  function cutRect() {
+    var vw = cam.videoWidth, vh = cam.videoHeight;
+    var cut = scan.querySelector('.cut').getBoundingClientRect();
+    var s = Math.max(innerWidth / vw, innerHeight / vh);           // object-fit: cover
+    var ox = (innerWidth - vw * s) / 2, oy = (innerHeight - vh * s) / 2;
+    var x = (cut.left - ox) / s, y = (cut.top - oy) / s, w = cut.width / s, h = cut.height / s;
+    x = vw - x - w;                                                // undo the mirror
+    return { x: Math.max(0, x), y: Math.max(0, y), w: Math.min(w, vw), h: Math.min(h, vh) };
+  }
+
+  function tick(now) {
+    if (!stream || busy) return;
+    if (cam.videoWidth) {
+      var r = cutRect();
+      pctx.drawImage(cam, r.x, r.y, r.w, r.h, 0, 0, probe.width, probe.height);
+      var d = pctx.getImageData(0, 0, probe.width, probe.height).data, n = d.length / 4;
+      var sum = 0, sq = 0, i, v;
+      for (i = 0; i < n; i++) { v = (d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000; sum += v; sq += v * v; }
+      var mean = sum / n, vari = sq / n - mean * mean;
+      // a face: neither dark nor blown out, and textured rather than a flat wall
+      var ok = mean > 55 && mean < 205 && vari > 350;
+      read.textContent = 'light ' + Math.round(mean) + ' · texture ' + Math.round(Math.sqrt(vari)) + (ok ? ' · lock' : ' · searching');
+      if (ok) {
+        if (!lockSince) lockSince = now;
+        scan.classList.add('lock');
+        var left = Math.ceil((2200 - (now - lockSince)) / 1000);
+        hint.textContent = 'hold still. scanning in ' + Math.max(0, left);
+        if (now - lockSince > 2200) { capture(); return; }
+      } else {
+        lockSince = 0; scan.classList.remove('lock');
+        hint.textContent = 'put your face in the frame. hold still.';
+      }
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function capture() {
+    if (busy || !cam.videoWidth) return;
+    busy = true; cancelAnimationFrame(raf);
+    var r = cutRect();
+    var dataUrl = mugshot(cam, r);
+    document.getElementById('doneimg').src = dataUrl;
+    document.getElementById('donetext').textContent = 'subject logged';
+    document.getElementById('donesub').textContent = 'filing...';
+    scan.classList.add('finished');
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    upload(dataUrl, function (ok, message) {
+      document.getElementById('donetext').textContent = ok ? 'subject logged' : 'not logged';
+      document.getElementById('donesub').textContent = ok ? "you're in the system. welcome to the group." : (message || 'try again');
+      setTimeout(closeScanner, ok ? 2600 : 3200);
+    });
+  }
 
   file.addEventListener('change', function () {
     var f = file.files && file.files[0];
@@ -126,20 +255,25 @@
     var im = new Image();
     im.onload = function () {
       URL.revokeObjectURL(url);
-      try { upload(mugshot(im)); } catch (e) { say('could not read that image'); }
+      try { upload(mugshot(im), function (ok, message) { say(ok ? '' : (message || 'not added')); }); } catch (e) { say('could not read that image'); }
     };
     im.onerror = function () { say('could not read that image'); };
     im.src = url;
   });
 
-  // Centre-crop to 3:4, grayscale, stretch the contrast, small JPEG.
-  function mugshot(im) {
+  // Centre-crop to 3:4 (or take the given source rect), grayscale, stretch the contrast, small JPEG.
+  function mugshot(src, rect) {
     var c = document.createElement('canvas'); c.width = W; c.height = H;
     var x = c.getContext('2d');
-    var sw = im.naturalWidth, sh = im.naturalHeight;
-    var s = Math.max(W / sw, H / sh);
-    var dw = sw * s, dh = sh * s;
-    x.drawImage(im, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    var sw = src.naturalWidth || src.videoWidth, sh = src.naturalHeight || src.videoHeight;
+    if (rect) {
+      var s2 = Math.max(W / rect.w, H / rect.h), cw = W / s2, ch = H / s2;
+      x.drawImage(src, rect.x + (rect.w - cw) / 2, rect.y + (rect.h - ch) / 2, cw, ch, 0, 0, W, H);
+    } else {
+      var s = Math.max(W / sw, H / sh);
+      var dw = sw * s, dh = sh * s;
+      x.drawImage(src, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    }
     var d = x.getImageData(0, 0, W, H), p = d.data, px = p.length / 4;
     var hist = new Uint32Array(256), lum = new Uint8ClampedArray(px), i, v;
     for (i = 0; i < px; i++) {
@@ -159,17 +293,17 @@
     return c.toDataURL('image/jpeg', 0.82);
   }
 
-  function upload(dataUrl) {
+  function upload(dataUrl, done) {
     fetch('/api/mugshots', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data: dataUrl })
     }).then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
       .then(function (ok) {
-        if (ok[0]) { add(dataUrl, true); say(''); }
-        else say(ok[1].message || 'not added');
+        if (ok[0]) add(dataUrl, true);
+        done(ok[0], ok[1] && ok[1].message);
       })
-      .catch(function () { say('not added'); })
+      .catch(function () { done(false, 'not added'); })
       .finally(function () { file.value = ''; });
   }
 })();
