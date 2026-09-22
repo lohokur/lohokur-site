@@ -106,7 +106,7 @@
 <tr><th align="left">Category</th><td>Software / Homemade</td></tr>
 <tr><th align="left">Author</th><td>loho kur</td></tr>
 <tr><th align="left">License</th><td>Free</td></tr>
-<tr><th align="left">Release</th><td>Sunday <span id="cd" style="font-family:ui-monospace,Menlo,monospace;font-size:13px"></span></td></tr>
+<tr><th align="left">Release</th><td><span id="cd" style="font-family:ui-monospace,Menlo,monospace;font-size:13px"></span></td></tr>
 <tr><th align="left">Description</th><td>cracked* &mdash; insanely good at something. homemade, anti-corporate, dope.</td></tr>
 <tr><td colspan="2"><form action="/join"><input type="submit" value="DOWNLOAD NOW"> <small>mirror: <a href="/join">mailing list</a></small></form></td></tr>
 </table>
@@ -230,7 +230,7 @@
   function tickCountdown() {
     var now = Date.now(), left = Math.max(0, nextRelease(now) - now) / 1000 | 0;
     var d = left / 86400 | 0, h = left / 3600 % 24 | 0, m = left / 60 % 60 | 0, s = left % 60;
-    cdEl.textContent = 'in ' + d + 'd ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+    cdEl.textContent = d + 'd ' + pad(h) + ':' + pad(m) + ':' + pad(s);
   }
   tickCountdown(); setInterval(tickCountdown, 1000);
 
