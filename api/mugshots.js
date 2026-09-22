@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { db, ensure, clientIp } from './_mugshots.js';
+import { screen } from './_screen.js';
 
 /* The mugshot wall.
 
@@ -10,8 +11,9 @@ import { db, ensure, clientIp } from './_mugshots.js';
           as base64. Stored as bytes in Postgres — no blob store to run.
 
    Guards: JPEG magic bytes, a hard byte cap, five uploads per IP per day, and
-   MUGSHOTS_CLOSED=1 shuts the door without a deploy. Hide a bad one with
-   tools/mugshots.mjs. */
+   MUGSHOTS_CLOSED=1 shuts the door without a deploy. Then every photo is
+   screened by Claude (api/_screen.js): one clean face or it does not go up.
+   Hide a bad one with tools/mugshots.mjs. */
 
 const MAX_BYTES = 250 * 1024;
 const PER_IP_PER_DAY = 5;
@@ -60,6 +62,13 @@ export default async function handler(req, res) {
   const [{ n }] = await sql`SELECT count(*)::int AS n FROM mugshots WHERE ip_hash = ${ipHash} AND created_at > now() - interval '1 day'`;
   if (n >= PER_IP_PER_DAY) {
     return res.status(429).json({ error: 'rate', message: 'That is enough for today.' });
+  }
+
+  // Faces only. Refused photos are not stored anywhere.
+  const check = await screen(buf);
+  if (!check.ok) {
+    console.log('mugshot refused:', check.reason || check.message);
+    return res.status(422).json({ error: 'screen', message: check.message });
   }
 
   const [{ id }] = await sql`INSERT INTO mugshots (image, bytes, ip_hash) VALUES (${buf}, ${buf.length}, ${ipHash}) RETURNING id`;
