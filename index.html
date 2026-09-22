@@ -117,11 +117,18 @@
 <table id="soft" border="0" cellspacing="0" cellpadding="6">
 <tr>
   <td align="center">
-    <a href="https://cracked-portal.vercel.app/"><img src="/blackglass.png" width="64" height="64" alt="Blackglass"></a><br>
+    <a href="https://cracked-portal.vercel.app/"><img src="/blackglass.png" width="64" height="64" alt="Blackglass for Mac"></a><br>
     <b>Blackglass</b> <small id="bg-ver">v0.1.6</small><br>
-    <small>free alternative to photoshop</small><br>
+    <small>for mac &middot; free alternative to photoshop</small><br>
     <form id="bg-dl" method="get" action="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-arm64.dmg"><input type="submit" value="DOWNLOAD"></form>
-    <small>mac (apple silicon) &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-x64.dmg">intel mac</a> &middot; <a id="bg-win" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-Setup-0.1.6-x64.exe">windows <span id="bg-win-ver">v0.1.6</span> &middot; <span id="bg-win-size">83 MB</span></a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small>
+    <small>apple silicon &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-x64.dmg">intel mac</a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small><br>
+  </td>
+  <td align="center">
+    <a href="https://cracked-portal.vercel.app/"><img src="/blackglass.png" width="64" height="64" alt="Blackglass for Windows"></a><br>
+    <b>Blackglass</b> <small id="bg-win-ver">v0.1.6</small><br>
+    <small>for windows &middot; free alternative to photoshop</small><br>
+    <form id="bg-win-dl" method="get" action="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-Setup-0.1.6-x64.exe"><input type="submit" value="DOWNLOAD"></form>
+    <small>windows 10/11 (64-bit) &middot; <span id="bg-win-size">83 MB</span> &middot; <span id="bg-win-left">300 copies</span></small><br>
   </td>
 </tr>
 </table>
@@ -187,20 +194,21 @@
   fetch('https://cracked-portal.vercel.app/api/apps').then(function (r) { return r.json(); }).then(function (j) {
     var app = (j.apps || []).filter(function (a) { return a.slug === 'blackglass'; })[0];
     var rels = (app && app.releases) || [];
-    var macs = rels.filter(function (r) { return (r.platform || 'mac') === 'mac'; }), wins = rels.filter(function (r) { return r.platform === 'win'; });
-    var rel = macs.filter(function (r) { return r.live; })[0] || macs[0];
-    var win = wins.filter(function (r) { return r.live; })[0];
-    if (win && win.assets && win.assets.exe_x64) { document.getElementById('bg-win').href = win.assets.exe_x64; document.getElementById('bg-win-ver').textContent = 'v' + win.version; if (win.sizeMb) document.getElementById('bg-win-size').textContent = Math.round(win.sizeMb) + ' MB'; }
-    var el = document.getElementById('bg-left');
-    if (!rel || !el) return;
-    if (rel.soldOut) el.textContent = 'sold out';
-    else if (typeof rel.left === 'number' && rel.limit) el.textContent = rel.left + ' of ' + rel.limit + ' left';
-    // The download button always points at the current release's DMG, so this page never needs editing when a new version ships.
-    var a = rel.assets || {};
-    if (a.dmg_arm64) document.getElementById('bg-dl').action = a.dmg_arm64;
-    if (a.dmg_x64) document.getElementById('bg-intel').href = a.dmg_x64;
-    if (rel.version) document.getElementById('bg-ver').textContent = 'v' + rel.version;
-    if (rel.sizeMb) document.getElementById('bg-size').textContent = Math.round(rel.sizeMb) + ' MB';
+    var pick = function (platform) { var xs = rels.filter(function (r) { return (r.platform || 'mac') === platform; }); return xs.filter(function (r) { return r.live; })[0] || xs[0]; };
+    var copies = function (rel, id) { var el = document.getElementById(id); if (!rel || !el) return; if (rel.soldOut) el.textContent = 'sold out'; else if (typeof rel.left === 'number' && rel.limit) el.textContent = rel.left + ' of ' + rel.limit + ' left'; };
+    // Each cell points at its platform's current release, so this page never needs editing when a new version ships.
+    var rel = pick('mac'), win = pick('win');
+    if (rel) { var a = rel.assets || {};
+      if (a.dmg_arm64) document.getElementById('bg-dl').action = a.dmg_arm64;
+      if (a.dmg_x64) document.getElementById('bg-intel').href = a.dmg_x64;
+      if (rel.version) document.getElementById('bg-ver').textContent = 'v' + rel.version;
+      if (rel.sizeMb) document.getElementById('bg-size').textContent = Math.round(rel.sizeMb) + ' MB';
+      copies(rel, 'bg-left'); }
+    if (win) { var w = win.assets || {};
+      if (w.exe_x64) document.getElementById('bg-win-dl').action = w.exe_x64;
+      if (win.version) document.getElementById('bg-win-ver').textContent = 'v' + win.version;
+      if (win.sizeMb) document.getElementById('bg-win-size').textContent = Math.round(win.sizeMb) + ' MB';
+      copies(win, 'bg-win-left'); }
   }).catch(function () {});
 
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
