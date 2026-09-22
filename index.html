@@ -171,8 +171,6 @@
   var probe = document.createElement('canvas'); probe.width = 48; probe.height = 64;
   var pctx = probe.getContext('2d', { willReadFrequently: true });
 
-  plus.addEventListener('click', openScanner);
-  if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
   document.getElementById('close').addEventListener('click', closeScanner);
   document.getElementById('upload').addEventListener('click', function () { closeScanner(); file.click(); });
   // Live feed when the browser allows it. In-app browsers (Instagram, Facebook, TikTok,
@@ -181,6 +179,9 @@
   var snap = document.getElementById('snap');
   var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|musical_ly|Snapchat|Twitter|Line\//i.test(navigator.userAgent);
   var canStream = !inApp && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+  plus.addEventListener('click', openScanner);
+  if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
 
   shoot.addEventListener('click', function () { if (stream) capture(); else if (!busy) snap.click(); });
   snap.addEventListener('change', function () {
