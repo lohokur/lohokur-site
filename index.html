@@ -384,11 +384,13 @@
     })();
   }
 
+  var pendingDl = null;
   function openScanner() {
     scan.className = 'on' + (canStream ? '' : ' handoff') + (inApp ? ' inapp' : ''); scan.setAttribute('aria-hidden', 'false');
     busy = false; lastLock = null; pendLock = null; lines = []; status = ''; frames = 0; stopTimers();
     t0 = performance.now(); render(true);
     later(120, function () {
+      if (pendingDl) logln('scan yourself into cracked*. your download starts after.', true);
       typeCmd('./scan --device /dev/video0 --roi 3:4', function () {
         logln('open /dev/video0');
         if (!canStream) { handoff('ENODEV (no live camera)'); return; }
@@ -426,6 +428,9 @@
     if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
     cam.srcObject = null; status = ''; doneimg.removeAttribute('src'); pendingAlias = null;
     scan.className = ''; scan.setAttribute('aria-hidden', 'true');
+    if (pendingDl) { var p = pendingDl; pendingDl = null;
+      if (MOBILE) flOpen(FL_PHONE);
+      else { location.href = '/api/download?p=' + p; setTimeout(function () { flOpen(p === 'win' ? FL_WIN : FL_MAC); }, 400); } }
   }
 
   // The 3:4 crop box, in video pixels, un-mirrored. What is captured is exactly what sits inside it.
@@ -723,6 +728,10 @@
   // Last, once everything above exists.
   plus.addEventListener('click', openScanner);
   if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
+  // From the email's download buttons: lohokur.com/?dl=mac|intel|win. Scan yourself into cracked* first; when the scanner closes
+  // (picture filed, or exit) the page is revealed and the download starts. On a phone there is nothing to install, so they get the
+  // come-back-on-your-computer note instead.
+  (function () { var q = new URLSearchParams(location.search), dl = q.get('dl'); if (!/^(mac|intel|win)$/.test(dl || '')) return; pendingDl = dl; history.replaceState(null, '', location.pathname); openScanner(); })();
 })();
 </script>
 

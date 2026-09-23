@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless';
 /* Click tracking: record, then send them on. Only our own pages are valid
    destinations, so this cannot be turned into an open redirect. */
 
-const ALLOWED = new Set(['https://lohokur.com', 'https://lohokur.com/join', 'https://deviantbyloho.com', 'https://lohokur.com/api/download?p=mac', 'https://lohokur.com/api/download?p=intel', 'https://lohokur.com/api/download?p=win']);
+const ALLOWED = new Set(['https://lohokur.com', 'https://lohokur.com/join', 'https://deviantbyloho.com', 'https://lohokur.com/api/download?p=mac', 'https://lohokur.com/api/download?p=intel', 'https://lohokur.com/api/download?p=win', 'https://lohokur.com/?dl=mac', 'https://lohokur.com/?dl=intel', 'https://lohokur.com/?dl=win']);
 const FALLBACK = 'https://lohokur.com';
 
 export default async function handler(req, res) {
