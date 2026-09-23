@@ -45,7 +45,7 @@ function email(token) {
 
         : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
     + `<p style="margin:24px 0 0;font-size:12px;opacity:.6"><a href="${unsub}" style="color:inherit">no more emails</a></p>`
-    + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"></div>`;
+    + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"><span style="display:none;font-size:0;color:transparent">${token}-${Date.now()}</span></div>`; // unique per copy, so Gmail never folds the ending into "..."
   return { subject: 'your copy is ready, hacker', text, html, headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
 }
 
@@ -59,10 +59,12 @@ async function batch(rows) { // Resend's batch endpoint: up to 100 distinct emai
   return r.json();
 }
 
+async function sendOne(to, m) { const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: FROM, reply_to: REPLY_TO, to: [to], ...m }) }); if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`); }
+
 if (flag('count')) { console.log(`${(await audience()).length} would get "${email('x').subject}"`); process.exit(0); }
 if (opt('test')) {
   const to = opt('test'); const [row] = await sql`select token from email_signups where email = ${to}`; const token = row ? row.token : 'test';
-  const m = email(token); await batch([{ email: to, token }]); console.log(`test sent to ${to}${row ? '' : ' (not on the list, so its links will not track)'}\n\nFrom: ${FROM}\nSubject: ${m.subject}\n\n${m.text}`); process.exit(0);
+  const m = email(token); m.subject += ` [test ${new Date().toTimeString().slice(0, 5)}]`; await sendOne(to, m); console.log(`test sent to ${to}${row ? '' : ' (not on the list, so its links will not track)'}\n\nFrom: ${FROM}\nSubject: ${m.subject}\n\n${m.text}`); process.exit(0);
 }
 if (flag('live')) {
   const all = await audience(); console.log(`sending "${email('x').subject}" to ${all.length}`); let sent = 0;
