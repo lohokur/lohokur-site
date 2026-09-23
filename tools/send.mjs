@@ -21,7 +21,7 @@ const SITE = 'https://lohokur.com';
 function email(token) {
   const px = `${SITE}/api/px?t=${token}&c=${CAMPAIGN}`;
   const go = `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(SITE)}`;
-  const dl = p => `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(`${SITE}/?dl=${p}`)}`; // scanner first, then the download
+  const dl = p => `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(`${SITE}/api/download?p=${p}`)}`; // straight to the installer
   const unsub = `${SITE}/api/unsub?t=${token}&c=${CAMPAIGN}`;
   const paras = [
     'hackers,',
