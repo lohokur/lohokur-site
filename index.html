@@ -60,6 +60,10 @@
   #soft td{width:180px}
   td,th{vertical-align:top;overflow-wrap:anywhere}
   #mugcell{width:177px;text-align:center}
+  /* desktop: the handprint stands to the right of the card, as tall as the card, never taller */
+  #handcell{display:none}
+  @media (min-width:900px){ #card{display:flex;align-items:stretch;gap:18px} #card table{flex:0 1 800px} #handcell{display:block;flex:none;width:170px;position:relative}
+    #hand{position:absolute;left:0;top:0;bottom:0;height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top} }
   #thumb{display:none}
   th{width:110px}
   /* phones: the mug cell has spare height under the photo (the Description row is tall), so the thumbprint
@@ -120,6 +124,7 @@
 <hr>
 <div id="home">
 
+<div id="card">
 <table border="1" cellspacing="0" cellpadding="6">
 <tr>
   <td rowspan="7" id="mugcell"><img id="mug" src="/mugshot.jpg" width="177" height="231" alt=""><img id="thumb" src="/thumbprint.png" width="60" height="82" alt="thumbprint"></td>
@@ -132,6 +137,8 @@
 <tr><th align="left">Description</th><td>cracked* &mdash; insanely good at something. homemade, anti-corporate, dope.</td></tr>
 <tr><td colspan="2"><form action="/join"><input type="submit" value="JOIN CRACKED*"> <small>mirror: <a href="/join">mailing list</a></small></form></td></tr>
 </table>
+<div id="handcell"><img id="hand" src="/handprint.png" alt="handprint"></div>
+</div>
 
 <hr>
 
