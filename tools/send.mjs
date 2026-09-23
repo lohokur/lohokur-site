@@ -33,7 +33,7 @@ function email(token) {
     'one rule: blackglass only ever comes from lohokur.com or this email. if you see it anywhere else, it isn\'t ours. don\'t download it.',
     'we improve blackglass every day, and what comes next comes from you. hit reply and tell me what\'s broken, what\'s missing, what you love. or tap send us feedback inside the app. i read every one.',
     'cracked* is a family. you\'re in it now.',
-    'love,\nloho kur',
+    'love,\nL',
   ];
   const text = paras.map(p => p === 'DOWNLOAD' ? `download it:\nmac (apple silicon): ${dl('mac')}\nmac (intel): ${dl('intel')}\nwindows: ${dl('win')}` : p).join('\n\n') + `\n\n${SITE}\n\nno more emails: ${unsub}`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
