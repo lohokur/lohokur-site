@@ -36,8 +36,20 @@ export default async function handler(req, res) {
     return res.status(200).json({ ids: rows.map((r) => r.id), items: rows.map((r) => ({ id: r.id, alias: r.alias || '' })) });
   }
 
+  // PATCH: the alias, added after the picture is already on the wall. Needs the edit token from the POST reply; once only.
+  if (req.method === 'PATCH') {
+    const pb = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+    const id = Number(pb.id), token = String(pb.token || '');
+    const alias = String(pb.alias || '').replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24);
+    if (!id || !token || !alias) return res.status(400).json({ error: 'alias', message: 'No alias.' });
+    const textCheck = await screenText(alias);
+    if (!textCheck.ok) { console.log('alias refused:', textCheck.reason || textCheck.message); return res.status(422).json({ error: 'alias', message: textCheck.message }); }
+    const rows = await sql`UPDATE mugshots SET alias = ${alias} WHERE id = ${id} AND edit_token = ${token} AND alias IS NULL RETURNING id`;
+    if (!rows.length) return res.status(403).json({ error: 'token', message: 'Not yours to name.' });
+    return res.status(200).json({ ok: true, id, alias });
+  }
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'GET, POST');
+    res.setHeader('Allow', 'GET, POST, PATCH');
     return res.status(405).json({ error: 'method' });
   }
 
@@ -77,6 +89,7 @@ export default async function handler(req, res) {
     return res.status(422).json({ error: 'alias', message: textCheck.message });
   }
 
-  const [{ id }] = await sql`INSERT INTO mugshots (image, bytes, ip_hash, alias) VALUES (${buf}, ${buf.length}, ${ipHash}, ${alias || null}) RETURNING id`;
-  return res.status(200).json({ ok: true, id, alias });
+  const token = crypto.randomBytes(16).toString('hex');
+  const [{ id }] = await sql`INSERT INTO mugshots (image, bytes, ip_hash, alias, edit_token) VALUES (${buf}, ${buf.length}, ${ipHash}, ${alias || null}, ${token}) RETURNING id`;
+  return res.status(200).json({ ok: true, id, alias, token });
 }

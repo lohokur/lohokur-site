@@ -22,6 +22,7 @@ export async function ensure(sql) {
   )`;
   await sql`CREATE INDEX IF NOT EXISTS mugshots_ip_recent ON mugshots (ip_hash, created_at)`;
   await sql`ALTER TABLE mugshots ADD COLUMN IF NOT EXISTS alias text`;
+  await sql`ALTER TABLE mugshots ADD COLUMN IF NOT EXISTS edit_token text`; // lets the person who filed a picture add their alias afterwards
   ensured = true;
 }
 

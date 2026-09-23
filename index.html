@@ -238,6 +238,7 @@
     if (first && wall.firstChild) wall.insertBefore(fig, wall.firstChild);
     else wall.appendChild(fig);
     count.textContent = ++n;
+    return fig;
   }
 
   // Copies left on the current Blackglass release, from the portal that hands them out.
@@ -502,20 +503,27 @@
     logln('develop: gray, stretch 1%, curve, posterize 8, grain, vignette -> jpeg ' + Math.round(dataUrl.length * 0.75 / 1024) + 'k');
     doneimg.src = dataUrl;
     scan.classList.add('finished');
-    // alias prompt: enter or [ ok ] files it; empty skips
-    aliasin.value = ''; scan.classList.add('asking');
-    later(50, function () { aliasin.focus(); });
-    pendingAlias = function () {
-      var alias = aliasin.value.replace(/\s+/g, ' ').trim().slice(0, 24);
-      pendingAlias = null; scan.classList.remove('asking');
-      logln('alias ' + (alias ? JSON.stringify(alias) : '(none)'));
-      logln('POST /api/mugshots');
-      upload(dataUrl, alias, function (ok, message) {
-        logln(ok ? '200 ok ' + (message || '') : 'refused: ' + (message || 'try again').toLowerCase());
-        later(ok ? 500 : 300, function () { logln(ok ? 'subject logged. welcome to cracked*.' : 'not logged'); });
-        later(ok ? 3200 : 3600, closeScanner);
-      });
-    };
+    // the picture is filed straight away; the alias is asked for after and attached if given, so nobody is lost at the prompt
+    logln('POST /api/mugshots');
+    upload(dataUrl, '', function (ok, message, filed) {
+      logln(ok ? '200 ok ' + (message || '') : 'refused: ' + (message || 'try again').toLowerCase());
+      if (!ok) { later(300, function () { logln('not logged'); }); later(3600, closeScanner); return; }
+      later(400, function () { logln('subject logged. welcome to cracked*.'); });
+      aliasin.value = ''; scan.classList.add('asking');
+      later(500, function () { aliasin.focus(); });
+      var closing = null;
+      pendingAlias = function () {
+        var alias = aliasin.value.replace(/\s+/g, ' ').trim().slice(0, 24);
+        pendingAlias = null; scan.classList.remove('asking');
+        if (!alias) { logln('alias (none)'); later(1200, closeScanner); return; }
+        logln('alias ' + JSON.stringify(alias)); logln('PATCH /api/mugshots');
+        fetch('/api/mugshots', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: filed.id, token: filed.token, alias: alias }) })
+          .then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
+          .then(function (res) { if (res[0]) { logln('200 ok'); if (filed.fig) { var cap = filed.fig.querySelector('figcaption'); if (cap) cap.textContent = res[1].alias; } } else logln('refused: ' + ((res[1] && res[1].message) || 'alias not saved').toLowerCase()); })
+          .catch(function () { logln('alias not saved'); })
+          .finally(function () { later(1500, closeScanner); });
+      };
+    });
   }
   aliasin.addEventListener('keydown', function (e) { if (e.key === 'Enter' && pendingAlias) { e.preventDefault(); pendingAlias(); } });
   document.getElementById('aliasok').addEventListener('click', function () { if (pendingAlias) pendingAlias(); });
@@ -588,8 +596,8 @@
       body: JSON.stringify({ data: dataUrl, alias: alias || '' })
     }).then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
       .then(function (ok) {
-        if (ok[0]) add(dataUrl, true, ok[1] && ok[1].alias);
-        done(ok[0], ok[1] && (ok[1].message || (ok[1].id ? 'id=' + ok[1].id : '')));
+        var fig = ok[0] ? add(dataUrl, true, ok[1] && ok[1].alias) : null;
+        done(ok[0], ok[1] && (ok[1].message || (ok[1].id ? 'id=' + ok[1].id : '')), ok[0] ? { id: ok[1].id, token: ok[1].token, fig: fig } : null);
       })
       .catch(function () { done(false, 'not added'); })
       .finally(function () { file.value = ''; });
