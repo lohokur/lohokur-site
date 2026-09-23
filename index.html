@@ -178,7 +178,7 @@
     <h3 id="fl-title"></h3>
     <p id="fl-body"></p>
     <img id="fl-img" alt="" hidden>
-    <div class="nav"><input type="button" id="fl-back" value="BACK"><input type="button" id="fl-next" value="NEXT"><input type="button" id="fl-done" value="DONE"> <small>Help &rsaquo; How Updates Work inside Blackglass shows this again.</small></div>
+    <div class="nav"><input type="button" id="fl-back" value="BACK"><input type="button" id="fl-next" value="NEXT"><input type="button" id="fl-done" value="DONE"> <small id="fl-note">Help &rsaquo; How Updates Work inside Blackglass shows this again.</small></div>
   </div>
 </div>
 
@@ -281,10 +281,16 @@
     { title: 'Run anyway, once', body: 'Click "Run anyway". Windows only asks the first time.', img: '/guide-win-2.png', w: 440 },
     { title: 'Updates take care of themselves', body: 'Blackglass checks for a new version when it opens and every two hours. It downloads in the background and installs itself when you quit, or on its own after two idle minutes with nothing unsaved. There is nothing to switch on. This bar is all you will ever see.', img: '/guide-mac-3.png', w: 460 }
   ];
+  var FL_PHONE = [
+    { title: 'Try again on your computer', body: 'Blackglass is a Mac and Windows app, so there is nothing for a phone to install. Open lohokur.com on your computer and hit DOWNLOAD there. Your copy is not claimed until you do.', img: '/blackglass.png', w: 96 }
+  ];
   var FL = FL_MAC;
+  // phones and tablets (iPad says it is a Mac, but a Mac has no touch)
+  var MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var fl = document.getElementById('fl'), flI = 0;
   function flRender() {
-    var s = FL[flI];
+    var s = FL[flI], one = FL.length === 1;
+    document.getElementById('fl-step').hidden = one; document.getElementById('fl-dots').hidden = one; document.getElementById('fl-note').hidden = one;
     document.getElementById('fl-step').textContent = 'Step ' + (flI + 1) + ' of ' + FL.length;
     document.getElementById('fl-dots').textContent = FL.map(function (_, i) { return i === flI ? '[*]' : '[ ]'; }).join('');
     document.getElementById('fl-title').textContent = s.title;
@@ -301,9 +307,10 @@
   document.getElementById('fl-done').addEventListener('click', flClose);
   fl.addEventListener('click', function (e) { if (e.target === fl) flClose(); });
   document.addEventListener('keydown', function (e) { if (!fl.classList.contains('on')) return; if (e.key === 'Escape') flClose(); else if (e.key === 'ArrowRight' && flI < FL.length - 1) { flI++; flRender(); } else if (e.key === 'ArrowLeft' && flI > 0) { flI--; flRender(); } });
-  document.getElementById('bg-dl').addEventListener('submit', function () { setTimeout(function () { flOpen(FL_MAC); }, 150); });
-  document.getElementById('bg-intel').addEventListener('click', function () { setTimeout(function () { flOpen(FL_MAC); }, 150); });
-  document.getElementById('bg-win-dl').addEventListener('submit', function () { setTimeout(function () { flOpen(FL_WIN); }, 150); });
+  function onDownload(steps) { return function (e) { if (MOBILE) { e.preventDefault(); flOpen(FL_PHONE); return; } setTimeout(function () { flOpen(steps); }, 150); }; }
+  document.getElementById('bg-dl').addEventListener('submit', onDownload(FL_MAC));
+  document.getElementById('bg-intel').addEventListener('click', onDownload(FL_MAC));
+  document.getElementById('bg-win-dl').addEventListener('submit', onDownload(FL_WIN));
 
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
     (j.items || (j.ids || []).map(function (id) { return { id: id }; })).forEach(function (it) { add('/api/mugshot?id=' + it.id, false, it.alias); });
