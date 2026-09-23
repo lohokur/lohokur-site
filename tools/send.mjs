@@ -14,7 +14,7 @@ const sql = neon(url);
 const args = process.argv.slice(2); const flag = k => args.includes('--' + k); const opt = k => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : null; };
 
 const CAMPAIGN = 'blackglass-out';
-const FROM = 'LOHO KUR <hello@lohokur.com>';
+const FROM = '"LOHO KUR CRACKED*" <hello@lohokur.com>'; // quoted: the asterisk is not allowed in a bare display name
 const REPLY_TO = 'loho@lohokur.com';
 const SITE = 'https://lohokur.com';
 
