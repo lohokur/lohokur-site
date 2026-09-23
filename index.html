@@ -100,6 +100,10 @@
   #scan .bot{position:absolute;left:4px;bottom:10px}
   #scan.finished .bot{display:none}
   #scan button{font:inherit;background:none;border:0;color:#fff;padding:8px 6px;cursor:pointer}
+  #scan label.btn{font:inherit;color:#fff;padding:8px 6px;cursor:pointer;display:none}
+  #scan.handoff #shoot{display:none} #scan.handoff label.btn{display:inline-block}
+  #scan #browser{display:none} #scan.inapp #browser{display:inline-block}
+  .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
   #scan button:active{color:#888}
 
   /* ===== first launch guide (Mac) =====
@@ -166,8 +170,8 @@
 <hr>
 
 <b>Cracked* Hackers</b> (<span id="count">0</span>) <button type="button" id="plus" title="scan yourself in">+</button> <small>scan yourself in</small>
-<input type="file" id="file" accept="image/*" hidden>
-<input type="file" id="snap" accept="image/*" capture="user" hidden>
+<input type="file" id="file" accept="image/*" class="vh">
+<input type="file" id="snap" accept="image/*" capture="user" class="vh">
 <p id="msg" hidden></p>
 <div id="wall"></div>
 
@@ -186,7 +190,7 @@
   <video id="cam" autoplay playsinline muted></video>
   <div class="cut"></div>
   <div class="term"><pre id="log"></pre><div id="ask">what's your name / alias? <input id="aliasin" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="(enter to skip)"><button type="button" id="aliasok">[ ok ]</button></div><img id="doneimg" alt=""></div>
-  <div class="bot"><button type="button" id="shoot">[ scan ]</button><button type="button" id="upload">[ upload ]</button><button type="button" id="close">[ exit ]</button></div>
+  <div class="bot"><button type="button" id="shoot">[ scan ]</button><label class="btn" for="snap" id="shootlbl">[ scan ]</label><button type="button" id="upload">[ upload ]</button><button type="button" id="browser">[ open in browser ]</button><button type="button" id="close">[ exit ]</button></div>
 </div>
 
 </div>
@@ -388,7 +392,7 @@
   }
 
   function openScanner() {
-    scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
+    scan.className = 'on' + (canStream ? '' : ' handoff') + (inApp ? ' inapp' : ''); scan.setAttribute('aria-hidden', 'false');
     busy = false; lastLock = null; pendLock = null; lines = []; status = ''; frames = 0; stopTimers();
     t0 = performance.now(); render(true);
     later(120, function () {
@@ -399,6 +403,7 @@
           later(40, function () { logln(inApp ? 'v4l2: EACCES (in-app browser: ' + host + ')' : 'v4l2: ENODEV (no live camera)'); });
           later(90, function () { logln('fallback: system camera'); });
           later(130, function () { logln('press [ scan ]'); });
+          if (inApp) later(170, function () { logln('nothing opens? [ open in browser ]'); });
           return;
         }
         later(30, function () { logln('alloc 4 buffers'); });
@@ -415,6 +420,7 @@
             })
             .catch(function (e) {
               logln('v4l2: ' + (e && e.name === 'NotAllowedError' ? 'EACCES (permission denied)' : 'ENODEV (' + ((e && e.name) || 'no camera').toLowerCase() + ')'));
+              scan.classList.add('handoff');
               later(120, function () { logln('fallback: system camera'); });
               later(180, function () { logln('press [ scan ]'); });
             });
@@ -463,6 +469,14 @@
 
   shoot.addEventListener('click', function () { if (stream) capture(); else if (!busy) { logln('handoff: system camera'); snap.click(); } });
   document.getElementById('close').addEventListener('click', closeScanner);
+  document.getElementById('browser').addEventListener('click', function () {
+    var target = 'lohokur.com/#scan';
+    logln('handoff: system browser');
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) location.href = 'x-safari-https://' + target;
+    else if (/Android/i.test(navigator.userAgent)) location.href = 'intent://' + target.replace('#', '%23') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2F' + encodeURIComponent(target) + ';end';
+    else window.open('https://' + target, '_blank');
+    later(1500, function () { logln('still here? tap the menu (\u2026) and choose open in browser'); });
+  });
   document.getElementById('upload').addEventListener('click', function () { closeScanner(); file.click(); });
 
   // Phone camera hand-off: the photo comes back through the same develop step.
