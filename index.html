@@ -97,7 +97,7 @@
   #scan #ask button{padding:0 4px}
   #scan #doneimg{display:none;width:118px;height:154px;border:1px solid #fff;margin:6px 0 0}
   #scan.finished #doneimg{display:block}
-  #scan .bot{position:absolute;left:4px;bottom:10px}
+  #scan .bot{position:absolute;left:4px;bottom:calc(48px + env(safe-area-inset-bottom))} /* clear of the phone home bar and browser chrome */
   #scan.finished .bot{display:none}
   #scan button{font:inherit;background:none;border:0;color:#fff;padding:8px 6px;cursor:pointer}
   #scan label.btn{font:inherit;color:#fff;padding:8px 6px;cursor:pointer;display:none}
