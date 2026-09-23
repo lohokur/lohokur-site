@@ -59,7 +59,10 @@
   #mugcell{width:177px;text-align:center}
   #thumb{display:block;width:60px;height:auto;margin:8px auto 0}
   th{width:110px}
-  @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} #thumb{width:40px} th{width:86px} }
+  /* phones: the mug cell has spare height under the photo (the Description row is tall), so the thumbprint
+     is taken out of flow and fills whatever is left. It can grow, it can never make the table taller. */
+  @media (max-width:600px){ #mugcell{width:96px;position:relative} #mug{width:96px;height:125px} th{width:86px}
+    #thumb{position:absolute;left:4px;right:4px;top:139px;bottom:4px;width:auto;height:auto;margin:0;object-fit:contain;object-position:center top} }
 
   /* ===== the scanner =====
      A terminal. Hard cut to black, you type the command, the log prints whole lines at
