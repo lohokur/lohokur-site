@@ -99,7 +99,7 @@
   #fl .step{font-size:11px;color:#666}
   #fl h3{margin:2px 0 6px;font-size:16px}
   #fl p{margin:0 0 10px;font-size:14px;line-height:1.45}
-  #fl img{display:block;max-width:100%;height:auto;border:1px solid #000;margin:0 0 10px}
+  #fl img{display:block;max-width:100%;height:auto;border:1px solid #000;margin:0 auto 10px}
   #fl img[hidden],#fl input[hidden]{display:none}
   #fl .nav{margin-top:6px}
   #fl .nav input{margin-right:6px}
@@ -241,10 +241,10 @@
      The Mac build is not signed by Apple, so macOS stops it once. The guide opens as the download starts
      (the form still submits: a file download never leaves the page) and from the "first launch help" link. */
   var FL = [
-    { title: 'Your download has started', body: 'Open the .dmg when it lands, drag Blackglass into Applications, then open it from Applications. The first launch takes two extra clicks. Here they are.' },
+    { title: 'Your download has started', body: 'Open the .dmg when it lands, drag Blackglass into Applications, then open it from Applications. The first launch takes two extra clicks. Here they are.', img: '/guide-mac-0.png', w: 400 },
     { title: 'If your Mac says "Not Opened"', body: 'macOS shows this the first time it meets an app that is not from the App Store. Click Done. Nothing is wrong with the app.', img: '/guide-mac-1.png', w: 260 },
     { title: 'Open Anyway, once', body: 'Open System Settings, go to Privacy & Security, scroll down to Security, and click "Open Anyway" next to Blackglass. Open Blackglass again. macOS remembers it from then on.', img: '/guide-mac-2.png', w: 460 },
-    { title: 'Updates take care of themselves', body: 'Blackglass checks for a new version when it opens and every two hours. It downloads in the background and installs itself when you quit, or on its own after two idle minutes with nothing unsaved. There is nothing to switch on.' }
+    { title: 'Updates take care of themselves', body: 'Blackglass checks for a new version when it opens and every two hours. It downloads in the background and installs itself when you quit, or on its own after two idle minutes with nothing unsaved. There is nothing to switch on. This bar is all you will ever see.', img: '/guide-mac-3.png', w: 460 }
   ];
   var fl = document.getElementById('fl'), flI = 0;
   function flRender() {
