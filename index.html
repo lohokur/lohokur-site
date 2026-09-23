@@ -19,8 +19,8 @@
 <style>
   body{background:#fff;color:#000}
   /* submit buttons keep the desktop look everywhere: iOS Safari would otherwise restyle them as its own pill */
-  input[type=submit]{-webkit-appearance:none;appearance:none;font:13.33px Arial,Helvetica,sans-serif;color:#000;background:#efefef;border:1px solid #767676;border-radius:3px;padding:2px 8px;margin:0;line-height:normal;cursor:pointer}
-  input[type=submit]:active{background:#dcdcdc}
+  input[type=submit],#plus{-webkit-appearance:none;appearance:none;font:13.33px Arial,Helvetica,sans-serif;color:#000;background:#efefef;border:1px solid #767676;border-radius:3px;padding:2px 8px;margin:0;line-height:normal;cursor:pointer}
+  input[type=submit]:active,#plus:active{background:#dcdcdc}
   img{max-width:100%;height:auto;vertical-align:top}
   #wall figure{display:inline-block;vertical-align:top;width:118px;margin:0 4px 6px 0}
   #wall img{width:118px;height:154px}
@@ -62,8 +62,9 @@
   #mugcell{width:177px;text-align:center}
   /* desktop: the handprint stands to the right of the card, as tall as the card, never taller */
   #handcell{display:none}
-  @media (min-width:900px){ #card{display:flex;align-items:stretch;gap:18px} #card table{flex:0 1 800px} #handcell{display:block;flex:none;width:170px;position:relative}
-    #hand{position:absolute;left:0;top:0;bottom:0;height:100%;width:auto;max-width:100%;object-fit:contain;object-position:left top} }
+  /* like s4lem.com: the print sits behind the grid and spills past it, tucked under the card's right edge, fingertips above, palm below */
+  @media (min-width:900px){ #card{display:flex;align-items:stretch;gap:0;position:relative} #card table{flex:0 1 800px;position:relative;z-index:1} #handcell{display:block;flex:none;width:200px;position:relative;margin-left:-34px;z-index:0}
+    #hand{position:absolute;left:0;top:-16px;height:calc(100% + 48px);width:auto;max-width:none} }
   #thumb{display:none}
   th{width:110px}
   /* phones: the mug cell has spare height under the photo (the Description row is tall), so the thumbprint
