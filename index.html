@@ -89,6 +89,21 @@
   #scan.finished .bot{display:none}
   #scan button{font:inherit;background:none;border:0;color:#fff;padding:8px 6px;cursor:pointer}
   #scan button:active{color:#888}
+
+  /* ===== first launch guide (Mac) =====
+     Opens the moment the Mac download starts. A plain bordered box in the page's own style:
+     one step at a time, the real macOS screenshots, Back / Next / Done. */
+  #fl{position:fixed;inset:0;z-index:90;background:rgba(255,255,255,.92);display:none;overflow:auto;padding:24px 16px}
+  #fl.on{display:block}
+  #fl .box{max-width:520px;margin:0 auto;background:#fff;border:1px solid #000;padding:12px 14px 14px}
+  #fl .step{font-size:11px;color:#666}
+  #fl h3{margin:2px 0 6px;font-size:16px}
+  #fl p{margin:0 0 10px;font-size:14px;line-height:1.45}
+  #fl img{display:block;max-width:100%;height:auto;border:1px solid #000;margin:0 0 10px}
+  #fl img[hidden],#fl input[hidden]{display:none}
+  #fl .nav{margin-top:6px}
+  #fl .nav input{margin-right:6px}
+  #fl .dots{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#666;float:right;margin-top:3px}
 </style>
 </head>
 <body>
@@ -121,7 +136,7 @@
     <b>Blackglass</b> (Mac) <small id="bg-ver">v0.1.6</small><br>
     <small>free alternative to photoshop</small><br>
     <form id="bg-dl" method="get" action="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-arm64.dmg"><input type="submit" value="DOWNLOAD"></form>
-    <small><a href="https://cracked-portal.vercel.app/#first-launch" title="First launch: if macOS says Not Opened, click Done, then System Settings &gt; Privacy &amp; Security &gt; Open Anyway">first launch help</a> &middot; apple silicon &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-x64.dmg">intel mac</a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small><br>
+    <small><a id="bg-help" href="https://cracked-portal.vercel.app/#first-launch" title="First launch: if macOS says Not Opened, click Done, then System Settings &gt; Privacy &amp; Security &gt; Open Anyway">first launch help</a> &middot; apple silicon &middot; <a id="bg-intel" href="https://github.com/lohokur/blackglass-releases/releases/download/v0.1.6/Blackglass-0.1.6-x64.dmg">intel mac</a> &middot; <span id="bg-size">96 MB</span> &middot; <span id="bg-left">300 copies</span></small><br>
   </td>
   <td align="center">
     <a href="https://cracked-portal.vercel.app/"><img src="/blackglass.png" width="64" height="64" alt="Blackglass for Windows"></a><br>
@@ -140,6 +155,17 @@
 <input type="file" id="snap" accept="image/*" capture="user" hidden>
 <p id="msg" hidden></p>
 <div id="wall"></div>
+
+<div id="fl" role="dialog" aria-modal="true" aria-labelledby="fl-title" aria-hidden="true">
+  <div class="box">
+    <span class="dots" id="fl-dots"></span>
+    <div class="step" id="fl-step"></div>
+    <h3 id="fl-title"></h3>
+    <p id="fl-body"></p>
+    <img id="fl-img" alt="" hidden>
+    <div class="nav"><input type="button" id="fl-back" value="BACK"><input type="button" id="fl-next" value="NEXT"><input type="button" id="fl-done" value="DONE"> <small>Help &rsaquo; How Updates Work inside Blackglass shows this again.</small></div>
+  </div>
+</div>
 
 <div id="scan" aria-hidden="true">
   <video id="cam" autoplay playsinline muted></video>
@@ -210,6 +236,38 @@
       if (win.sizeMb) document.getElementById('bg-win-size').textContent = Math.round(win.sizeMb) + ' MB';
       copies(win, 'bg-win-left'); }
   }).catch(function () {});
+
+  /* ---- first launch guide ----
+     The Mac build is not signed by Apple, so macOS stops it once. The guide opens as the download starts
+     (the form still submits: a file download never leaves the page) and from the "first launch help" link. */
+  var FL = [
+    { title: 'Your download has started', body: 'Open the .dmg when it lands, drag Blackglass into Applications, then open it from Applications. The first launch takes two extra clicks. Here they are.' },
+    { title: 'If your Mac says "Not Opened"', body: 'macOS shows this the first time it meets an app that is not from the App Store. Click Done. Nothing is wrong with the app.', img: '/guide-mac-1.png', w: 260 },
+    { title: 'Open Anyway, once', body: 'Open System Settings, go to Privacy & Security, scroll down to Security, and click "Open Anyway" next to Blackglass. Open Blackglass again. macOS remembers it from then on.', img: '/guide-mac-2.png', w: 460 },
+    { title: 'Updates take care of themselves', body: 'Blackglass checks for a new version when it opens and every two hours. It downloads in the background and installs itself when you quit, or on its own after two idle minutes with nothing unsaved. There is nothing to switch on.' }
+  ];
+  var fl = document.getElementById('fl'), flI = 0;
+  function flRender() {
+    var s = FL[flI];
+    document.getElementById('fl-step').textContent = 'Step ' + (flI + 1) + ' of ' + FL.length;
+    document.getElementById('fl-dots').textContent = FL.map(function (_, i) { return i === flI ? '[*]' : '[ ]'; }).join('');
+    document.getElementById('fl-title').textContent = s.title;
+    document.getElementById('fl-body').textContent = s.body;
+    var im = document.getElementById('fl-img'); im.hidden = !s.img; if (s.img) { im.src = s.img; im.alt = s.title; im.style.maxWidth = s.w + 'px'; }
+    document.getElementById('fl-back').hidden = flI === 0;
+    document.getElementById('fl-next').hidden = flI === FL.length - 1;
+    document.getElementById('fl-done').hidden = flI !== FL.length - 1;
+  }
+  function flOpen() { flI = 0; flRender(); fl.classList.add('on'); fl.setAttribute('aria-hidden', 'false'); document.getElementById('fl-next').focus(); }
+  function flClose() { fl.classList.remove('on'); fl.setAttribute('aria-hidden', 'true'); }
+  document.getElementById('fl-back').addEventListener('click', function () { if (flI > 0) { flI--; flRender(); } });
+  document.getElementById('fl-next').addEventListener('click', function () { if (flI < FL.length - 1) { flI++; flRender(); } });
+  document.getElementById('fl-done').addEventListener('click', flClose);
+  fl.addEventListener('click', function (e) { if (e.target === fl) flClose(); });
+  document.addEventListener('keydown', function (e) { if (!fl.classList.contains('on')) return; if (e.key === 'Escape') flClose(); else if (e.key === 'ArrowRight' && flI < FL.length - 1) { flI++; flRender(); } else if (e.key === 'ArrowLeft' && flI > 0) { flI--; flRender(); } });
+  document.getElementById('bg-dl').addEventListener('submit', function () { setTimeout(flOpen, 150); });
+  document.getElementById('bg-intel').addEventListener('click', function () { setTimeout(flOpen, 150); });
+  document.getElementById('bg-help').addEventListener('click', function (e) { e.preventDefault(); flOpen(); });
 
   fetch('/api/mugshots').then(function (r) { return r.json(); }).then(function (j) {
     (j.items || (j.ids || []).map(function (id) { return { id: id }; })).forEach(function (it) { add('/api/mugshot?id=' + it.id, false, it.alias); });
