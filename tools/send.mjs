@@ -31,6 +31,7 @@ function email(token) {
     'make something, then put it on the gallery. anyone can open a copy of your work and build on it, and you see who did.',
     'DOWNLOAD',
     'you sign in the first time you open it, then it\'s yours.',
+    'one rule: blackglass only ever comes from lohokur.com or this email. if you see it anywhere else, it isn\'t ours. don\'t download it.',
     'love,\nloho kur',
   ];
   const text = paras.map(p => p === 'DOWNLOAD' ? `download it:\nmac (apple silicon): ${dl('mac')}\nmac (intel): ${dl('intel')}\nwindows: ${dl('win')}` : p).join('\n\n') + `\n\n${SITE}\n\nno more emails: ${unsub}`;
