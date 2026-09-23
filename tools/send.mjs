@@ -43,7 +43,7 @@ function email(token) {
         ? `<p style="margin:0 0 14px"><a href="${go}"><img src="${SITE}/email/blackglass.gif" width="560" alt="blackglass, working on a photo" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:8px"></a></p>`
         : p === 'DOWNLOAD'
         ? `<p style="margin:0 0 8px">download it:</p><table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px"><tr>`
-          + [['mac', 'apple', 'mac'], ['win', 'windows', 'windows']].map(([p, icon, label]) => `<td style="padding:0 8px 8px 0"><a href="${dl(p)}" style="display:inline-block;background:#000;color:#fff;text-decoration:none;border-radius:8px;padding:10px 16px 10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;line-height:20px"><img src="${SITE}/email/${icon}.png" width="20" height="20" alt="" style="vertical-align:-4px;border:0;margin-right:8px">${label}</a></td>`).join('')
+          + [['mac', 'apple', 'mac', 90], ['win', 'windows', 'windows', 125]].map(([p, icon, label, w]) => `<td style="padding:0 8px 8px 0"><a href="${dl(p)}" style="text-decoration:none"><img src="${SITE}/email/btn-${icon}.png" width="${w}" height="44" alt="download for ${label}" style="display:block;border:0;width:${w}px;height:44px"></a></td>`).join('') // images, so dark mode can't recolour them
           + `</tr></table><p style="margin:0 0 14px;font-size:12px;opacity:.7">older intel mac? <a href="${dl('intel')}" style="color:inherit">this one</a>. or everything at <a href="${go}" style="color:inherit">lohokur.com</a></p>`
 
         : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
