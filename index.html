@@ -56,9 +56,10 @@
   #soft{width:auto;table-layout:auto}
   #soft td{width:180px}
   td,th{vertical-align:top;overflow-wrap:anywhere}
-  #mugcell{width:177px}
+  #mugcell{width:177px;text-align:center}
+  #thumb{display:block;width:60px;height:auto;margin:8px auto 0}
   th{width:110px}
-  @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} th{width:86px} }
+  @media (max-width:600px){ #mugcell{width:96px} #mug{width:96px;height:125px} #thumb{width:40px} th{width:86px} }
 
   /* ===== the scanner =====
      A terminal. Hard cut to black, you type the command, the log prints whole lines at
@@ -115,7 +116,7 @@
 
 <table border="1" cellspacing="0" cellpadding="6">
 <tr>
-  <td rowspan="7" id="mugcell"><img id="mug" src="/mugshot.jpg" width="177" height="231" alt=""></td>
+  <td rowspan="7" id="mugcell"><img id="mug" src="/mugshot.jpg" width="177" height="231" alt=""><img id="thumb" src="/thumbprint.png" width="60" height="98" alt="thumbprint"></td>
   <th align="left">File</th><td>LOHO KUR</td>
 </tr>
 <tr><th align="left">Category</th><td>Software / Homemade</td></tr>
@@ -150,7 +151,7 @@
 
 <hr>
 
-<b>Hackers</b> (<span id="count">0</span>) <button type="button" id="plus" title="scan yourself in">+</button> <small>scan yourself in</small>
+<b>Cracked* Hackers</b> (<span id="count">0</span>) <button type="button" id="plus" title="scan yourself in">+</button> <small>scan yourself in</small>
 <input type="file" id="file" accept="image/*" hidden>
 <input type="file" id="snap" accept="image/*" capture="user" hidden>
 <p id="msg" hidden></p>
