@@ -109,7 +109,7 @@
 <body>
 
 <b><a href="/" style="color:inherit;text-decoration:none">LOHO KUR</a></b> &middot; <span id="sub">Downloads</span><br>
-<small><a href="/#music">Music</a> | <a href="/#identities">Identities</a> | <a href="/uniform">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
+<small><a href="/#about">About</a> | <a href="/#music">Music</a> | <a href="/#identities">Identities</a> | <a href="/uniform">Uniform</a> | <a href="/runway">Runway</a> | <a href="/join">Join</a></small>
 <hr>
 <div id="home">
 
@@ -189,6 +189,20 @@
 <div id="idview" hidden>
 <b>Identities</b> (<span id="idcount">0</span>)
 <div id="idwall"></div>
+</div>
+<div id="aboutview" hidden>
+<b>About</b>
+<table border="1" cellspacing="0" cellpadding="6">
+<tr><th align="left">Name</th><td>LOHO KUR</td></tr>
+<tr><th align="left">Based</th><td>Paris</td></tr>
+<tr><th align="left">Does</th><td>Designer and software / machine learning engineer. Generative systems that end in a physical product: a garment, a shoe, a tool a team actually uses.</td></tr>
+<tr><th align="left">Software</th><td>Homemade, anti-corporate. <a href="https://cracked-portal.vercel.app/">cracked*</a> is the portal, <a href="/">Blackglass</a> is the first release: an image editor with a familiar cadence, free, updates itself.</td></tr>
+<tr><th align="left">Clothes</th><td><a href="https://deviantbyloho.com">deviant by loho</a>. Jeanz&copy;, made in small runs. <a href="/uniform">Uniform</a> and <a href="/runway">Runway</a> are here.</td></tr>
+<tr><th align="left">Work</th><td>LOHO KUR x Nike We-Create: a design kiosk where a prompt becomes a manufacturing order. Creative partner at Flora AI. Earlier, the Stem Player at Kano.</td></tr>
+<tr><th align="left">Company</th><td>By Loho Studios Limited, UK.</td></tr>
+<tr><th align="left">Why</th><td>Them: is this software legit?<br>You: yes. it's cracked.</td></tr>
+<tr><td colspan="2"><form action="/join"><input type="submit" value="JOIN"> <small>releases land in your inbox first</small></form></td></tr>
+</table>
 </div>
 <hr>
 <small>&copy; 2026 LOHO KUR</small>
@@ -637,15 +651,17 @@
     if (p >= 0 && p <= 1) audio.currentTime = p * audio.duration;
   });
 
-  var VIEWS = { '#identities': { el: idview, sub: 'Identities' }, '#music': { el: player, sub: 'Music' } };
+  var aboutview = document.getElementById('aboutview');
+  var VIEWS = { '#identities': { el: idview, sub: 'Identities' }, '#music': { el: player, sub: 'Music' }, '#about': { el: aboutview, sub: 'About' } };
   function route() {
     var v = VIEWS[location.hash];
     idTimers.forEach(function (t) { clearTimeout(t); }); idTimers = [];
-    home.hidden = !!v; idview.hidden = !(v && v.el === idview); player.hidden = !(v && v.el === player);
+    home.hidden = !!v; idview.hidden = !(v && v.el === idview); player.hidden = !(v && v.el === player); aboutview.hidden = !(v && v.el === aboutview);
     sub.textContent = v ? v.sub : 'Downloads';
     document.title = 'LOHO KUR - ' + sub.textContent;
     if (!v) return;
     window.scrollTo(0, 0);
+    if (v.el === aboutview) return;
     if (v.el === idview) {
       buildIdentities();
       var figs = idwall.querySelectorAll('figure'), shown = 0;
