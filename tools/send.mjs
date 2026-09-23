@@ -40,7 +40,10 @@ function email(token) {
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6">`
     + paras.map(p => p === 'DOWNLOAD'
-        ? `<p style="margin:0 0 6px">download it:</p><p style="margin:0 0 14px"><a href="${dl('mac')}" style="display:inline-block;padding:8px 14px;border:1px solid currentColor;border-radius:6px;color:inherit;text-decoration:none;margin:0 6px 6px 0">mac</a><a href="${dl('win')}" style="display:inline-block;padding:8px 14px;border:1px solid currentColor;border-radius:6px;color:inherit;text-decoration:none;margin:0 6px 6px 0">windows</a><br><span style="font-size:12px;opacity:.7">older intel mac? <a href="${dl('intel')}" style="color:inherit">this one</a>. or everything at <a href="${go}" style="color:inherit">lohokur.com</a></span></p>`
+        ? `<p style="margin:0 0 8px">download it:</p><table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 8px"><tr>`
+          + [['mac', 'apple', 'mac'], ['win', 'windows', 'windows']].map(([p, icon, label]) => `<td style="padding:0 8px 8px 0"><a href="${dl(p)}" style="display:inline-block;background:#000;color:#fff;text-decoration:none;border-radius:8px;padding:10px 16px 10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;line-height:20px"><img src="${SITE}/email/${icon}.png" width="20" height="20" alt="" style="vertical-align:-4px;border:0;margin-right:8px">${label}</a></td>`).join('')
+          + `</tr></table><p style="margin:0 0 14px;font-size:12px;opacity:.7">older intel mac? <a href="${dl('intel')}" style="color:inherit">this one</a>. or everything at <a href="${go}" style="color:inherit">lohokur.com</a></p>`
+
         : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
     + `<p style="margin:24px 0 0;font-size:12px;opacity:.6"><a href="${unsub}" style="color:inherit">no more emails</a></p>`
     + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"></div>`;
