@@ -191,7 +191,7 @@
   <video id="cam" autoplay playsinline muted></video>
   <div class="cut"></div>
   <div class="term"><pre id="log"></pre><div id="ask">what's your name / alias? <input id="aliasin" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="(enter to skip)"><button type="button" id="aliasok">[ ok ]</button></div><img id="doneimg" alt=""></div>
-  <div class="bot"><button type="button" id="shoot">[ scan ]</button><label class="btn" for="snap" id="shootlbl">[ scan ]</label><label class="btn up" for="file" id="upload">[ upload ]</label><button type="button" id="browser">[ open in browser ]</button><button type="button" id="close">[ exit ]</button></div>
+  <div class="bot"><button type="button" id="shoot">[ scan ]</button><label class="btn" for="snap" id="shootlbl">[ scan ]</label><button type="button" id="close">[ exit ]</button></div>
 </div>
 
 </div>
@@ -418,7 +418,7 @@
     scan.classList.add('handoff');
     later(40, function () { logln('v4l2: ' + why + (inApp ? ' (in-app browser: ' + host + ')' : '')); });
     later(90, function () { logln('fallback: phone camera. press [ scan ]'); });
-    if (inApp) later(140, function () { logln('nothing opens? [ open in browser ], or tap \u2026 \u2192 open in browser'); });
+    if (inApp) later(140, function () { logln('nothing opens? tap \u2026 \u2192 open in browser'); });
   }
   function closeScanner() {
     cancelAnimationFrame(raf); raf = 0; stopTimers();
@@ -468,9 +468,6 @@
     else window.open('https://' + target, '_blank');
     later(1500, function () { logln('still here? tap \u2026 top right \u2192 open in browser'); });
   }
-  document.getElementById('browser').addEventListener('click', openInBrowser);
-  // [ upload ] is a label for the file input: the picker opens natively and the scanner stays up underneath it
-  document.getElementById('upload').addEventListener('click', function () { if (!busy) logln('handoff: photo library'); });
 
   // Phone camera hand-off: the photo comes back through the same develop step.
   snap.addEventListener('change', function () {
