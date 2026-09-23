@@ -27,7 +27,7 @@ function email(token) {
     'cracked* hackers,',
     'blackglass is out.',
     'a free full image editor, and the first piece of the cracked* creative suite. layers, masks, adjustment layers, filters, psd export. homemade designer software, anti-corporate, yours for good.',
-    'we will never act like adobe. they made cancelling so hard that the USA government took them to court over it. i think that\'s disgusting, so i built a solution.',
+    'we will never act like adobe. they made cancelling so hard that the USA government took them to court over it. they made removing your payment card so hard, and they even charge crazy cancellation fees if you simply don\'t want to use them anymore. i think that\'s disgusting, so i built a solution.',
     'creativity shouldn\'t depend on the cash in your pocket. everyone deserves the chance to create freely.',
     'GIF',
     'make something, then share it on the gallery. anyone can open a copy of your work and build on it, and you see who did.',
