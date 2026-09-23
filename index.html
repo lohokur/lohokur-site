@@ -390,7 +390,7 @@
     busy = false; lastLock = null; pendLock = null; lines = []; status = ''; frames = 0; stopTimers();
     t0 = performance.now(); render(true);
     later(120, function () {
-      if (pendingDl) logln('scan yourself into cracked*. your download starts after.', true);
+      if (pendingDl) logln(MOBILE ? 'scan yourself into cracked*.' : 'your download has started. while it lands, scan yourself into cracked*.', true);
       typeCmd('./scan --device /dev/video0 --roi 3:4', function () {
         logln('open /dev/video0');
         if (!canStream) { handoff('ENODEV (no live camera)'); return; }
@@ -430,7 +430,7 @@
     scan.className = ''; scan.setAttribute('aria-hidden', 'true');
     if (pendingDl) { var p = pendingDl; pendingDl = null;
       if (MOBILE) flOpen(FL_PHONE);
-      else { location.href = '/api/download?p=' + p; setTimeout(function () { flOpen(p === 'win' ? FL_WIN : FL_MAC); }, 400); } }
+      else flOpen(p === 'win' ? FL_WIN : FL_MAC); } // the download already started on arrival; now the first-launch steps
   }
 
   // The 3:4 crop box, in video pixels, un-mirrored. What is captured is exactly what sits inside it.
@@ -728,10 +728,10 @@
   // Last, once everything above exists.
   plus.addEventListener('click', openScanner);
   if (location.hash === '#scan') openScanner();   // lohokur.com/#scan opens the scanner straight away
-  // From the email's download buttons: lohokur.com/?dl=mac|intel|win. Scan yourself into cracked* first; when the scanner closes
-  // (picture filed, or exit) the page is revealed and the download starts. On a phone there is nothing to install, so they get the
+  // From the email's download buttons: lohokur.com/?dl=mac|intel|win. The download starts on arrival, then the scanner asks them to
+  // scan into cracked*; when it closes (picture filed, or exit) the page is revealed with the first-launch steps. On a phone there is nothing to install, so they get the
   // come-back-on-your-computer note instead.
-  (function () { var q = new URLSearchParams(location.search), dl = q.get('dl'); if (!/^(mac|intel|win)$/.test(dl || '')) return; pendingDl = dl; history.replaceState(null, '', location.pathname); openScanner(); })();
+  (function () { var q = new URLSearchParams(location.search), dl = q.get('dl'); if (!/^(mac|intel|win)$/.test(dl || '')) return; pendingDl = dl; history.replaceState(null, '', location.pathname); if (!MOBILE) location.href = '/api/download?p=' + dl; setTimeout(openScanner, MOBILE ? 0 : 600); })(); // the download starts first, then the scanner
 })();
 </script>
 
