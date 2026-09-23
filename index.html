@@ -18,6 +18,9 @@
 </script>
 <style>
   body{background:#fff;color:#000}
+  /* submit buttons keep the desktop look everywhere: iOS Safari would otherwise restyle them as its own pill */
+  input[type=submit]{-webkit-appearance:none;appearance:none;font:13.33px Arial,Helvetica,sans-serif;color:#000;background:#efefef;border:1px solid #767676;border-radius:3px;padding:2px 8px;margin:0;line-height:normal;cursor:pointer}
+  input[type=submit]:active{background:#dcdcdc}
   img{max-width:100%;height:auto;vertical-align:top}
   #wall figure{display:inline-block;vertical-align:top;width:118px;margin:0 4px 6px 0}
   #wall img{width:118px;height:154px}
