@@ -26,13 +26,12 @@ function email(token) {
   const paras = [
     'hackers,',
     'blackglass is out.',
-    'a full image editor. layers, masks, adjustment layers, filters, psd export. homemade, non-corporate, free. yours for good.',
-    'it opens on mac and windows with no warnings, and it updates itself. you never download it twice.',
-    'make something, then put it on the gallery. anyone can open a copy of your work and build on it, and you see who did.',
+    'a full image editor, and the first piece of a full creative suite. layers, masks, adjustment layers, filters, psd export. homemade, non-corporate, free. yours for good.',
+    'make something, then share it on the gallery. anyone can open a copy of your work and build on it, and you see who did.',
     'DOWNLOAD',
     'you sign in the first time you open it, then it\'s yours.',
     'one rule: blackglass only ever comes from lohokur.com or this email. if you see it anywhere else, it isn\'t ours. don\'t download it.',
-    'we build it every day, and what we build next comes from you. hit reply and tell me what\'s broken, what\'s missing, what you love. or tap send us feedback inside the app. i read every one.',
+    'we improve blackglass every day, and what comes next comes from you. hit reply and tell me what\'s broken, what\'s missing, what you love. or tap send us feedback inside the app. i read every one.',
     'cracked* is a family. you\'re in it now.',
     'love,\nloho kur',
   ];
