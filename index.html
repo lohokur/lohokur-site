@@ -353,11 +353,12 @@
   var doneimg = document.getElementById('doneimg');
   var shoot = document.getElementById('shoot');
   var snap = document.getElementById('snap');
+  if (/Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|musical_ly|Snapchat|Twitter|Line\//i.test(navigator.userAgent)) snap.removeAttribute('capture'); // WebViews choke on the capture flag; without it iOS offers Take Photo
   var stream = null, raf = 0, busy = false, t0 = 0, lines = [], status = '', timers = [], lastLock = null, pendLock = null, pendSince = 0, frames = 0;
   var probe = document.createElement('canvas'); probe.width = 48; probe.height = 64;
   var pctx = probe.getContext('2d', { willReadFrequently: true });
   var inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|musical_ly|Snapchat|Twitter|Line\//i.test(navigator.userAgent);
-  var canStream = !inApp && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  var canStream = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); // tried everywhere, in-app browsers included; failures fall through to the phone camera
 
   function esc(t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
   function stamp() { var t = ((performance.now() - t0) / 1000).toFixed(3); return '[' + ('      ' + t).slice(-8) + '] '; }
@@ -389,18 +390,14 @@
     later(120, function () {
       typeCmd('./scan --device /dev/video0 --roi 3:4', function () {
         logln('open /dev/video0');
-        if (!canStream) {
-          var host = (navigator.userAgent.match(/Instagram|FBAN|FBAV|TikTok|Snapchat|Twitter|Line/i) || ['host'])[0].toLowerCase();
-          later(40, function () { logln(inApp ? 'v4l2: EACCES (in-app browser: ' + host + ')' : 'v4l2: ENODEV (no live camera)'); });
-          later(90, function () { logln('fallback: system camera'); });
-          later(130, function () { logln('press [ scan ]'); });
-          if (inApp) later(170, function () { logln('nothing opens? [ open in browser ]'); });
-          return;
-        }
+        if (!canStream) { handoff('ENODEV (no live camera)'); return; }
         later(30, function () { logln('alloc 4 buffers'); });
         later(60, function () {
           logln('requesting device');
-          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
+          Promise.race([ // WebViews can sit on the request forever: 6s and we move on
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false }),
+            new Promise(function (_, rej) { setTimeout(function () { rej({ name: 'TimeoutError' }); }, 6000); })
+          ])
             .then(function (s) { stream = s; cam.srcObject = s; return cam.play(); })
             .then(function () {
               var tr = stream.getVideoTracks()[0], st = tr.getSettings ? tr.getSettings() : {};
@@ -409,17 +406,20 @@
               later(60, function () { logln('roi 3:4 centre -> 590x770'); scan.classList.add('roi'); });
               later(120, function () { logln('waiting for subject'); raf = requestAnimationFrame(tick); });
             })
-            .catch(function (e) {
-              logln('v4l2: ' + (e && e.name === 'NotAllowedError' ? 'EACCES (permission denied)' : 'ENODEV (' + ((e && e.name) || 'no camera').toLowerCase() + ')'));
-              scan.classList.add('handoff');
-              later(120, function () { logln('fallback: system camera'); });
-              later(180, function () { logln('press [ scan ]'); });
-            });
+            .catch(function (e) { handoff(e && e.name === 'NotAllowedError' ? 'EACCES (permission denied)' : e && e.name === 'TimeoutError' ? 'ETIMEDOUT (no answer from the camera)' : 'ENODEV (' + ((e && e.name) || 'no camera').toLowerCase() + ')'); });
         });
       });
     });
   }
 
+  // Live camera failed or is missing: [ scan ] becomes the phone camera input; in-app browsers also get the browser hint.
+  function handoff(why) {
+    var host = (navigator.userAgent.match(/Instagram|FBAN|FBAV|TikTok|Snapchat|Twitter|Line/i) || ['host'])[0].toLowerCase();
+    scan.classList.add('handoff');
+    later(40, function () { logln('v4l2: ' + why + (inApp ? ' (in-app browser: ' + host + ')' : '')); });
+    later(90, function () { logln('fallback: phone camera. press [ scan ]'); });
+    if (inApp) later(140, function () { logln('nothing opens? [ open in browser ], or tap \u2026 \u2192 open in browser'); });
+  }
   function closeScanner() {
     cancelAnimationFrame(raf); raf = 0; stopTimers();
     if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
@@ -458,16 +458,17 @@
     raf = requestAnimationFrame(tick);
   }
 
-  shoot.addEventListener('click', function () { if (stream) capture(); else if (!busy) { logln('handoff: system camera'); snap.click(); } });
+  shoot.addEventListener('click', function () { if (stream) capture(); else if (!busy) { logln('handoff: phone camera'); snap.click(); } });
   document.getElementById('close').addEventListener('click', closeScanner);
-  document.getElementById('browser').addEventListener('click', function () {
+  function openInBrowser() {
     var target = 'lohokur.com/#scan';
     logln('handoff: system browser');
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) location.href = 'x-safari-https://' + target;
     else if (/Android/i.test(navigator.userAgent)) location.href = 'intent://' + target.replace('#', '%23') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2F' + encodeURIComponent(target) + ';end';
     else window.open('https://' + target, '_blank');
-    later(1500, function () { logln('still here? tap the menu (\u2026) and choose open in browser'); });
-  });
+    later(1500, function () { logln('still here? tap \u2026 top right \u2192 open in browser'); });
+  }
+  document.getElementById('browser').addEventListener('click', openInBrowser);
   // [ upload ] is a label for the file input: the picker opens natively and the scanner stays up underneath it
   document.getElementById('upload').addEventListener('click', function () { if (!busy) logln('handoff: photo library'); });
 
