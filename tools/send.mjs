@@ -24,7 +24,7 @@ function email(token) {
   const dl = p => `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(`${SITE}/api/download?p=${p}`)}`; // straight to the installer
   const unsub = `${SITE}/api/unsub?t=${token}&c=${CAMPAIGN}`;
   const paras = [
-    'hackers,',
+    'cracked* hackers,',
     'blackglass is out.',
     'a full image editor, and the first piece of a full creative suite. layers, masks, adjustment layers, filters, psd export. homemade, non-corporate, free. yours for good.',
     'GIF',
