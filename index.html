@@ -493,7 +493,7 @@
       logln('POST /api/mugshots');
       upload(dataUrl, alias, function (ok, message) {
         logln(ok ? '200 ok ' + (message || '') : 'refused: ' + (message || 'try again').toLowerCase());
-        later(ok ? 500 : 300, function () { logln(ok ? 'subject logged. you are in the system.' : 'not logged'); });
+        later(ok ? 500 : 300, function () { logln(ok ? 'subject logged. welcome to cracked*.' : 'not logged'); });
         later(ok ? 3200 : 3600, closeScanner);
       });
     };
