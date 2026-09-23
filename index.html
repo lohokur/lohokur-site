@@ -102,6 +102,7 @@
   #scan button{font:inherit;background:none;border:0;color:#fff;padding:8px 6px;cursor:pointer}
   #scan label.btn{font:inherit;color:#fff;padding:8px 6px;cursor:pointer;display:none}
   #scan.handoff #shoot{display:none} #scan.handoff label.btn{display:inline-block}
+  #scan label.up{display:inline-block}
   #scan #browser{display:none} #scan.inapp #browser{display:inline-block}
   .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
   #scan button:active{color:#888}
@@ -190,7 +191,7 @@
   <video id="cam" autoplay playsinline muted></video>
   <div class="cut"></div>
   <div class="term"><pre id="log"></pre><div id="ask">what's your name / alias? <input id="aliasin" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="(enter to skip)"><button type="button" id="aliasok">[ ok ]</button></div><img id="doneimg" alt=""></div>
-  <div class="bot"><button type="button" id="shoot">[ scan ]</button><label class="btn" for="snap" id="shootlbl">[ scan ]</label><button type="button" id="upload">[ upload ]</button><button type="button" id="browser">[ open in browser ]</button><button type="button" id="close">[ exit ]</button></div>
+  <div class="bot"><button type="button" id="shoot">[ scan ]</button><label class="btn" for="snap" id="shootlbl">[ scan ]</label><label class="btn up" for="file" id="upload">[ upload ]</label><button type="button" id="browser">[ open in browser ]</button><button type="button" id="close">[ exit ]</button></div>
 </div>
 
 </div>
@@ -477,13 +478,14 @@
     else window.open('https://' + target, '_blank');
     later(1500, function () { logln('still here? tap the menu (\u2026) and choose open in browser'); });
   });
-  document.getElementById('upload').addEventListener('click', function () { closeScanner(); file.click(); });
+  // [ upload ] is a label for the file input: the picker opens natively and the scanner stays up underneath it
+  document.getElementById('upload').addEventListener('click', function () { if (!busy) logln('handoff: photo library'); });
 
   // Phone camera hand-off: the photo comes back through the same develop step.
   snap.addEventListener('change', function () {
     var f = snap.files && snap.files[0];
     if (!f) return;
-    busy = true; logln('read ' + (f.name || 'image') + ' ' + Math.round(f.size / 1024) + 'k');
+    busy = true; stopTimers(); status = ''; logln('read ' + (f.name || 'image') + ' ' + Math.round(f.size / 1024) + 'k');
     var url = URL.createObjectURL(f), im = new Image();
     im.onload = function () {
       URL.revokeObjectURL(url);
@@ -539,12 +541,15 @@
     im.onload = function () {
       URL.revokeObjectURL(url);
       say('');
-      scan.className = 'on'; scan.setAttribute('aria-hidden', 'false');
-      lines = []; status = ''; t0 = performance.now(); busy = true;
+      // picked from inside the scanner: keep the session and its log; otherwise bring the scanner up for the develop step
+      if (!scan.classList.contains('on')) { scan.className = 'on'; scan.setAttribute('aria-hidden', 'false'); lines = []; t0 = performance.now(); }
+      cancelAnimationFrame(raf); raf = 0; stopTimers(); status = ''; busy = true;
+      if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; logln('stream off'); }
       logln('read ' + (f.name || 'image') + ' ' + Math.round(f.size / 1024) + 'k');
-      try { finish(mugshot(im)); } catch (e) { logln('decode failed'); later(1500, closeScanner); }
+      try { finish(mugshot(im)); } catch (e) { busy = false; logln('decode failed. press [ scan ] or [ upload ] to retry'); }
+      file.value = '';
     };
-    im.onerror = function () { say('could not read that image'); };
+    im.onerror = function () { file.value = ''; if (scan.classList.contains('on')) logln('decode failed. press [ scan ] or [ upload ] to retry'); else say('could not read that image'); };
     im.src = url;
   });
 
