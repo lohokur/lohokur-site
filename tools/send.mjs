@@ -48,7 +48,7 @@ function email(token) {
           + [['mac', 'apple', 'mac', 90], ['win', 'windows', 'windows', 125]].map(([p, icon, label, w]) => `<td style="padding:0 8px 8px 0"><a href="${dl(p)}" style="text-decoration:none"><img src="${SITE}/email/btn-${icon}.png" width="${w}" height="44" alt="download for ${label}" style="display:block;border:0;width:${w}px;height:44px"></a></td>`).join('') // images, so dark mode can't recolour them
           + `</tr></table><p style="margin:0 0 14px;font-size:12px;opacity:.7">older intel mac? <a href="${dl('intel')}" style="color:inherit">this one</a>. or everything at <a href="${go}" style="color:inherit">lohokur.com</a></p>`
 
-        : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
+        : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>').replace('a free full image editor', '<b>a free full image editor</b>')}</p>`).join('')
     + `<p style="margin:24px 0 0;font-size:12px;opacity:.6"><a href="${unsub}" style="color:inherit">no more emails</a></p>`
     + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"><span style="display:none;font-size:0;color:transparent">${token}-${Date.now()}</span></div>`; // unique per copy, so Gmail never folds the ending into "..."
   return { subject: 'your copy is ready, hacker', text, html, headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
