@@ -21,6 +21,7 @@ const SITE = 'https://lohokur.com';
 function email(token) {
   const px = `${SITE}/api/px?t=${token}&c=${CAMPAIGN}`;
   const go = `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(SITE)}`;
+  const dl = p => `${SITE}/api/go?t=${token}&c=${CAMPAIGN}&u=${encodeURIComponent(`${SITE}/api/download?p=${p}`)}`;
   const unsub = `${SITE}/api/unsub?t=${token}&c=${CAMPAIGN}`;
   const paras = [
     'hackers,',
@@ -28,14 +29,15 @@ function email(token) {
     'a full image editor. layers, masks, adjustment layers, filters, psd export. homemade, non-corporate, free. yours for good.',
     'it opens on mac and windows with no warnings, and it updates itself. you never download it twice.',
     'make something, then put it on the gallery. anyone can open a copy of your work and build on it, and you see who did.',
-    'get it at lohokur.com',
+    'DOWNLOAD',
+    'you sign in the first time you open it, then it\'s yours.',
     'love,\nloho kur',
   ];
-  const text = paras.join('\n\n') + `\n\n${SITE}\n\nno more emails: ${unsub}`;
+  const text = paras.map(p => p === 'DOWNLOAD' ? `download it:\nmac (apple silicon): ${dl('mac')}\nmac (intel): ${dl('intel')}\nwindows: ${dl('win')}` : p).join('\n\n') + `\n\n${SITE}\n\nno more emails: ${unsub}`;
   const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6">`
-    + paras.map(p => p === 'get it at lohokur.com'
-        ? `<p style="margin:0 0 14px">get it at <a href="${go}" style="color:inherit">lohokur.com</a></p>`
+    + paras.map(p => p === 'DOWNLOAD'
+        ? `<p style="margin:0 0 6px">download it:</p><p style="margin:0 0 14px"><a href="${dl('mac')}" style="display:inline-block;padding:8px 14px;border:1px solid currentColor;border-radius:6px;color:inherit;text-decoration:none;margin:0 6px 6px 0">mac</a><a href="${dl('win')}" style="display:inline-block;padding:8px 14px;border:1px solid currentColor;border-radius:6px;color:inherit;text-decoration:none;margin:0 6px 6px 0">windows</a><br><span style="font-size:12px;opacity:.7">older intel mac? <a href="${dl('intel')}" style="color:inherit">this one</a>. or everything at <a href="${go}" style="color:inherit">lohokur.com</a></span></p>`
         : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
     + `<p style="margin:24px 0 0;font-size:12px;opacity:.6"><a href="${unsub}" style="color:inherit">no more emails</a></p>`
     + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"></div>`;
