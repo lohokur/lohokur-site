@@ -244,7 +244,7 @@
     img.src = src; img.width = 118; img.height = 154; img.alt = alias || '';
     img.loading = 'lazy';
     fig.appendChild(img);
-    if (alias) { var cap = document.createElement('figcaption'); cap.textContent = alias; fig.appendChild(cap); }
+    var cap = document.createElement('figcaption'); cap.textContent = alias || '(null)'; fig.appendChild(cap); // no alias given: the register still needs a name field
     if (first && wall.firstChild) wall.insertBefore(fig, wall.firstChild);
     else wall.appendChild(fig);
     count.textContent = ++n;
