@@ -26,7 +26,7 @@ function email(token) {
   const paras = [
     'cracked* hackers,',
     'blackglass is out.',
-    'a free full image editor, and the first piece of a full creative suite. layers, masks, adjustment layers, filters, psd export. homemade, anti-corporate, yours for good.',
+    'a free full image editor, and the first piece of a full creative suite. layers, masks, adjustment layers, filters, psd export. homemade designer software, anti-corporate, yours for good.',
     'we will never act like adobe. they made cancelling so hard that the us government took them to court over it. i think that\'s disgusting, so i built something else.',
     'creativity shouldn\'t depend on what\'s in your pocket. everyone deserves the chance to create freely.',
     'GIF',
