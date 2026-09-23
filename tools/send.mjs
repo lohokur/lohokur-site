@@ -51,7 +51,7 @@ function email(token) {
         : `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>').replace('a free full image editor', '<b>a free full image editor</b>')}</p>`).join('')
     + `<p style="margin:24px 0 0;font-size:12px;opacity:.6"><a href="${unsub}" style="color:inherit">no more emails</a></p>`
     + `<img src="${px}" width="1" height="1" alt="" style="display:block;border:0"><span style="display:none;font-size:0;color:transparent">${token}-${Date.now()}</span></div>`; // unique per copy, so Gmail never folds the ending into "..."
-  return { subject: 'your copy is ready, hacker', text, html, headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
+  return { subject: 'Your cracked* copy is ready, hacker', text, html, headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
 }
 
 const audience = () => sql`select email, token from email_signups s where unsubscribed_at is null and token is not null
